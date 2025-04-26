@@ -2,14 +2,22 @@
 package database
 
 import (
-    "github.com/jmoiron/sqlx"
-    _ "github.com/lib/pq"
+	"log"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-func ConnectPostgres(dsn string) (*sqlx.DB, error) {
-    db, err := sqlx.Connect("postgres", dsn)
+var db *gorm.DB
+
+// // GetDB returns the database instance
+// func GetDB() *gorm.DB {
+//     return db
+// }
+func ConnectPostgres() {
+    dsn := "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
+    dbConn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
     if err != nil {
-        return nil, err
+        log.Fatal("failed to connect to db:", err)
     }
-    return db, nil
+    db = dbConn
 }

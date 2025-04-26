@@ -5,7 +5,7 @@ import (
     "net/http"
 
     "github.com/gin-gonic/gin"
-    "project-name/internal/usecase"
+    "setUp/internal/usecase"
 )
 
 type UserHandler struct {
