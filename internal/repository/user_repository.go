@@ -2,25 +2,23 @@
 package repository
 
 import (
-    "database/sql"
-    "project-name/internal/domain"
-
-    "github.com/jmoiron/sqlx"
+    "setUp/internal/domain"
+    "gorm.io/gorm"
 )
 
 type UserPostgres struct {
-    DB *sqlx.DB
+    DB *gorm.DB
 }
 
-func NewUserPostgres(db *sqlx.DB) *UserPostgres {
+func NewUserPostgres(db *gorm.DB) *UserPostgres {
     return &UserPostgres{DB: db}
 }
 
 func (r *UserPostgres) GetByUsername(username string) (*domain.User, error) {
     var u domain.User
-    err := r.DB.Get(&u, "SELECT id, username, password FROM users WHERE username=$1", username)
-    if err == sql.ErrNoRows {
+    result := r.DB.Where("username = ?", username).First(&u)
+    if result.Error == gorm.ErrRecordNotFound {
         return nil, nil
     }
-    return &u, err
+    return &u, result.Error
 }

@@ -4,11 +4,17 @@ package domain
 
 type SubModule struct {
 	BaseModel
-	Name string `gorm:"null"`
-	Const string `gorm:"not null"`
-	Permissions []Permission `gorm:"foreignKey:ModuleId"`
+	ModuleId    string       `gorm:"column:module_id;not null"`
+	Name        string       `gorm:"column:name;null"`
+	Const       string       `gorm:"column:const;not null"`
+	Description string       `gorm:"column:description;null"`
+	Permissions []Permission `gorm:"foreignKey:ModuleId;column:permissions"`
+}
+
+func (SubModule) TableName() string {
+    return "sub_modules"
 }
 
 type SubModuleRepository interface {
-	GetModule(module string) (*SubModule, error)
+	GetSubModule(module string) (*SubModule, error)
 }
