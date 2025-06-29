@@ -4,13 +4,13 @@ package main
 import (
     "fmt"
     "log"
-    "os"
-
-    "project-name/config"
-    "project-name/internal/delivery"
-    "project-name/internal/repository"
-    "project-name/internal/usecase"
-    "project-name/pkg/database"
+    // "os"
+    "strconv"
+    "setUp/config"
+    "setUp/internal/delivery"
+    "setUp/internal/repository"
+    "setUp/internal/usecase"
+    "setUp/pkg/database"
 
     "github.com/gin-gonic/gin"
 )
@@ -18,18 +18,18 @@ import (
 func main() {
     cfg := config.Load()
 
-    db, err := database.ConnectPostgres(cfg.DBUrl)
+    db, err := database.ConnectPostgres()
     if err != nil {
         log.Fatalf("failed to connect to DB: %v", err)
     }
-
-    userRepo := repository.NewUserPostgres(db)
-    userUC := usecase.NewUserUsecase(userRepo, cfg.JWTSecret)
+    
+    userRepo := repository.NewUserRepository(db)
+    userUC := usecase.NewUserUsecase(userRepo)
     userHandler := delivery.NewUserHandler(userUC)
 
     r := gin.Default()
     r.POST("/login", userHandler.Login)
 
     fmt.Println("Server running at port", cfg.Port)
-    r.Run(":" + cfg.Port)
+    r.Run(":" + strconv.Itoa(cfg.Port))
 }

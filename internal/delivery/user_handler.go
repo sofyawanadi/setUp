@@ -2,10 +2,12 @@
 package delivery
 
 import (
-    "net/http"
+	"fmt"
+	"net/http"
 
-    "github.com/gin-gonic/gin"
-    "setUp/internal/usecase"
+	"setUp/internal/usecase"
+
+	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
@@ -17,13 +19,14 @@ func NewUserHandler(uc *usecase.UserUsecase) *UserHandler {
 }
 
 type LoginRequest struct {
-    Username string `json:"username"`
-    Password string `json:"password"`
+    Username string `json:"username" form:"username" `
+    Password string `json:"password" form:"password" `
 }
 
 func (h *UserHandler) Login(c *gin.Context) {
     var req LoginRequest
     if err := c.ShouldBindJSON(&req); err != nil {
+        fmt.Println("Error binding JSON:", err)
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }

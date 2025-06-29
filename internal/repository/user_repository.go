@@ -6,18 +6,22 @@ import (
     "gorm.io/gorm"
 )
 
-type UserPostgres struct {
-    DB *gorm.DB
+type UserRepository interface {
+    GetByUsername(username string) (*domain.User, error)
 }
 
-func NewUserPostgres(db *gorm.DB) *UserPostgres {
-    return &UserPostgres{DB: db}
+type userRepository struct {
+	db *gorm.DB
 }
 
-func (r *UserPostgres) GetByUsername(username string) (*domain.User, error) {
-    var u domain.User
-    result := r.DB.Where("username = ?", username).First(&u)
-    if result.Error == gorm.ErrRecordNotFound {
+func NewUserRepository(db *gorm.DB) UserRepository {
+	return &userRepository{db}
+}
+
+func (r *userRepository) GetByUsername(username string) (*domain.User, error) {
+	var u domain.User
+	result := r.db.Where("username = ?", username).First(&u)
+	if result.Error == gorm.ErrRecordNotFound {
         return nil, nil
     }
     return &u, result.Error

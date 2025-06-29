@@ -1,24 +1,39 @@
 // user_usecase.go
-package repository
+package usecase
 
 import "setUp/internal/domain"
+import "setUp/internal/repository"
 
-type UserMemoryRepo struct {
-	users map[string]domain.User
+type UserUsecaseInterface interface {
+	GetByUsername(username string) (*domain.User, error)
+	Login(username, password string) (*domain.User, error)
 }
 
-func NewUserMemoryRepo() *UserMemoryRepo {
-	return &UserMemoryRepo{
-		users: map[string]domain.User{
-			"admin": {ID: 1, Username: "admin", Password: "admin"},
-		},
+type UserUsecase struct {
+	userRepo repository.UserRepository
+}
+
+func NewUserUsecase(userRepo repository.UserRepository) *UserUsecase {
+	return &UserUsecase{
+		userRepo: userRepo,
 	}
 }
 
-func (r *UserMemoryRepo) GetByUsername(username string) (*domain.User, error) {
-	user, ok := r.users[username]
-	if !ok {
+func (r *UserUsecase) GetByUsername(username string) (*domain.User, error) {
+	user, err := r.userRepo.GetByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (r *UserUsecase) Login(username, password string) (*domain.User, error) {
+	user, err := r.userRepo.GetByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil || user.Password != password {
 		return nil, nil
 	}
-	return &user, nil
+	return user, nil
 }
