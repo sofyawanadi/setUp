@@ -4,6 +4,7 @@ package repository
 import (
     "setUp/internal/domain"
     "gorm.io/gorm"
+    "go.uber.org/zap"
 )
 
 type UserRepository interface {
@@ -12,10 +13,11 @@ type UserRepository interface {
 
 type userRepository struct {
 	db *gorm.DB
+    log *zap.Logger
 }
 
-func NewUserRepository(db *gorm.DB) UserRepository {
-	return &userRepository{db}
+func NewUserRepository(db *gorm.DB, log *zap.Logger) UserRepository {
+	return &userRepository{db,log}
 }
 
 func (r *userRepository) GetByUsername(username string) (*domain.User, error) {

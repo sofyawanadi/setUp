@@ -3,7 +3,7 @@ package usecase
 
 import "setUp/internal/domain"
 import "setUp/internal/repository"
-
+import "go.uber.org/zap"
 type UserUsecaseInterface interface {
 	GetByUsername(username string) (*domain.User, error)
 	Login(username, password string) (*domain.User, error)
@@ -11,11 +11,13 @@ type UserUsecaseInterface interface {
 
 type UserUsecase struct {
 	userRepo repository.UserRepository
+	log      *zap.Logger
 }
 
-func NewUserUsecase(userRepo repository.UserRepository) *UserUsecase {
+func NewUserUsecase(userRepo repository.UserRepository, log *zap.Logger) *UserUsecase {
 	return &UserUsecase{
 		userRepo: userRepo,
+		log:      log,
 	}
 }
 

@@ -8,6 +8,7 @@ import (
     "strconv"
     "setUp/config"
     "setUp/internal/delivery"
+    "setUp/internal/logger"
     "setUp/internal/repository"
     "setUp/internal/usecase"
     "setUp/pkg/database"
@@ -22,10 +23,11 @@ func main() {
     if err != nil {
         log.Fatalf("failed to connect to DB: %v", err)
     }
-    
-    userRepo := repository.NewUserRepository(db)
-    userUC := usecase.NewUserUsecase(userRepo)
-    userHandler := delivery.NewUserHandler(userUC)
+    log := logger.NewLogger()
+	defer log.Sync()
+    userRepo := repository.NewUserRepository(db,log)
+    userUC := usecase.NewUserUsecase(userRepo,log)
+    userHandler := delivery.NewUserHandler(userUC,log)
 
     r := gin.Default()
     r.POST("/login", userHandler.Login)
