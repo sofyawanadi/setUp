@@ -4,9 +4,11 @@ package usecase
 import "setUp/internal/domain"
 import "setUp/internal/repository"
 import "go.uber.org/zap"
+import "github.com/gin-gonic/gin"
 type UserUsecaseInterface interface {
-	GetByUsername(username string) (*domain.User, error)
-	Login(username, password string) (*domain.User, error)
+	GetByUsername(c *gin.Context,username string) (*domain.User, error)
+	Login(c *gin.Context,username, password string) (*domain.User, error)
+	InsertLogLogin(c *gin.Context, username string, success bool)
 }
 
 type UserUsecase struct {
@@ -21,16 +23,16 @@ func NewUserUsecase(userRepo repository.UserRepository, log *zap.Logger) *UserUs
 	}
 }
 
-func (r *UserUsecase) GetByUsername(username string) (*domain.User, error) {
-	user, err := r.userRepo.GetByUsername(username)
+func (r *UserUsecase) GetByEmail(c *gin.Context,email string) (*domain.User, error) {
+	user, err := r.userRepo.GetByEmail(email)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (r *UserUsecase) Login(username, password string) (*domain.User, error) {
-	user, err := r.userRepo.GetByUsername(username)
+func (r *UserUsecase) Login(c *gin.Context,email, password string) (*domain.User, error) {
+	user, err := r.userRepo.GetByEmail(email)
 	if err != nil {
 		return nil, err
 	}
@@ -38,4 +40,13 @@ func (r *UserUsecase) Login(username, password string) (*domain.User, error) {
 		return nil, nil
 	}
 	return user, nil
+}
+
+func (r *UserUsecase) InsertLogLogin(c *gin.Context, username string, success bool) error {
+	err := r.userRepo.InsertLogLogins(c, username, success)
+	if err != nil {
+		r.log.Error("failed to log login attempt", zap.Error(err))
+		return err
+	}
+	return nil
 }

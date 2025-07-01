@@ -2,14 +2,14 @@
 package delivery
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"go.uber.org/zap"
 	"setUp/internal/usecase"
+	"setUp/internal/utils"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type UserHandler struct {
@@ -22,7 +22,7 @@ func NewUserHandler(uc *usecase.UserUsecase, log *zap.Logger) *UserHandler {
 }
 
 type LoginRequest struct {
-	Username string `json:"username" form:"username" validate:"required,min=3,max=20"`
+	Email    string `json:"email" form:"email" validate:"required,email"`
 	Password string `json:"password" form:"password" validate:"required,min=6,max=100"`
 }
 
@@ -33,36 +33,38 @@ func (h *UserHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	validate := validator.New()
-	err := validate.Struct(req)
-	if err != nil {
-		// Kumpulkan error ke dalam map
-		errors := make(map[string]string)
-
-		for _, err := range err.(validator.ValidationErrors) {
-			field := err.Field()
-			tag := err.Tag()
-
-			// Bisa disesuaikan untuk pesan error yang lebih user-friendly
-			errors[field] = fmt.Sprintf("Field '%s' tidak valid (rule: %s)", field, tag)
-		}
-
-		// Misal ingin kirim sebagai JSON response
-		jsonErr, _ := json.MarshalIndent(errors, "", "  ")
-
-		h.log.Warn("Validasi gagal", zap.String("errors", string(jsonErr)))
-		h.log.Error("Error marshalling JSON", zap.Error(err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": "validasi gagal"})
-		return
-
-	}
-    clientIP := c.ClientIP()
-	token, err := h.uc.Login(req.Username, req.Password)
-	if err != nil {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+	// Panggil helper untuk validasi
+	if !utils.ValidateRequest(&req, c, h.log) {
 		return
 	}
-    h.log.Info("Login Success",zap.String("username", req.Username), zap.String("client_ip", clientIP))
+	// insert log login
+	h.uc.InsertLogLogin(c, req.Email, true)
+
+	clientIP := c.ClientIP()
+	// Cek apakah user sudah ada
+	user, err := h.uc.GetByEmail(c, req.Email)
+	if err != nil {
+		h.log.Error("Error getting user by email", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+	// Jika user tidak ditemukan
+	if user == nil {
+		h.log.Warn("Login failed: user not found", zap.String("Email", req.Email), zap.String("client_ip", clientIP))
+		h.uc.InsertLogLogin(c, req.Email, false)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found"})
+		return
+	}
+	// Cek password
+	if !utils.CheckPasswordHash(req.Password, user.Password) {
+		h.log.Warn("Login failed: invalid password", zap.String("Email", req.Email), zap.String("client_ip", clientIP))
+		h.uc.InsertLogLogin(c, req.Email, false)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid password"})
+		return
+	}
+
+	token := "re"
+	h.log.Info("Login Success", zap.String("Email", req.Email), zap.String("client_ip", clientIP))
 
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
