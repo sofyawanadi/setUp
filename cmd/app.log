@@ -9,3 +9,6 @@
 {"level":"\u001b[33mWARN\u001b[0m","timestamp":"2025-07-01T23:48:30.143+0700","caller":"delivery/user_handler.go:53","message":"Login failed: user not found","username":"test2112","client_ip":"127.0.0.1"}
 {"level":"\u001b[33mWARN\u001b[0m","timestamp":"2025-07-01T23:50:49.388+0700","caller":"utils/validator.go:31","message":"Validasi gagal","errors":"{\n  \"Username\": \"Field 'Username' tidak valid (rule: required)\"\n}"}
 {"level":"\u001b[33mWARN\u001b[0m","timestamp":"2025-07-01T23:51:11.486+0700","caller":"delivery/user_handler.go:60","message":"Login failed: invalid password","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
+{"level":"\u001b[33mWARN\u001b[0m","timestamp":"2025-07-02T00:05:41.899+0700","caller":"delivery/user_handler.go:60","message":"Login failed: invalid password","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
+{"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-02T00:08:10.350+0700","caller":"delivery/user_handler.go:72","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
+{"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-02T00:15:47.494+0700","caller":"delivery/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}

@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"setUp/internal/usecase"
-	"setUp/internal/utils"
-
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"setUp/internal/usecase"
+	"setUp/internal/utils"
+	"setUp/pkg/jwt"
 )
 
 type UserHandler struct {
@@ -63,8 +63,31 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	token := "re"
+	token, err := jwt.CreateToken(user.ID.String(), user.Email)
+	if err != nil {
+		h.log.Error("Error creating token", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+	refreshToken, err := jwt.CreateRefreshToken(user.ID.String(), user.Email)
+	if err != nil {
+		h.log.Error("Error creating token", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
 	h.log.Info("Login Success", zap.String("Email", req.Email), zap.String("client_ip", clientIP))
 
-	c.JSON(http.StatusOK, gin.H{"token": token})
+	user.Password = "" // Hapus password dari response
+	c.JSON(http.StatusOK, gin.H{
+		"token":         token,
+		"refresh_token": refreshToken,
+		"user": map[string]interface{}{
+			"id":      user.ID,
+			"email":   user.Email,
+			"name":    user.Username,
+			"address": user.Address,
+		},
+		"message":       "Login successful",
+		"client_ip":     clientIP,
+	})
 }
