@@ -12,9 +12,11 @@ import (
 	"setUp/internal/repository"
 	"setUp/internal/usecase"
 	"setUp/pkg/database"
+    "setUp/internal/route"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+
 )
 
 func main() {
@@ -34,7 +36,9 @@ func main() {
     userHandler := delivery.NewUserHandler(userUC,log)
 
     r := gin.Default()
-    r.POST("/login", userHandler.Login)
+    apiV1 := r.Group("/api/v1") // Grouping routes under /api/v1
+    apiV1.Use(gin.Recovery())
+    route.RouteUser(apiV1, userHandler)
 
     fmt.Println("Server running at port", os.Getenv("PORT"))
     r.Run(":" + os.Getenv("PORT"))

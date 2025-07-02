@@ -91,3 +91,14 @@ func (h *UserHandler) Login(c *gin.Context) {
 		"client_ip":     clientIP,
 	})
 }
+
+func (h *UserHandler) GetAllUsers(c *gin.Context) {
+	users, err := h.uc.GetAllUsers()
+	if err != nil {
+		h.log.Error("Error getting all users", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, utils.ResponseError(utils.ErrorMessage))
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"users": users})
+	return
+}

@@ -10,6 +10,7 @@ import (
 
 type UserRepository interface {
     GetByEmail(email string) (*domain.User, error)
+    GetAllUsers() ([]domain.User, error) 
     InsertLogLogins(c *gin.Context, email string, success bool) error
 }
 
@@ -41,4 +42,14 @@ func (r *userRepository) InsertLogLogins(c *gin.Context,Email string, success bo
         return err
     }
     return nil
+}
+
+func (r *userRepository) GetAllUsers() ([]domain.User, error) {
+    var users []domain.User
+    result := r.db.Select("id", "email", "username", "created_at", "updated_at").Find(&users)
+    if result.Error != nil {
+        r.log.Error("failed to get all users", zap.Error(result.Error))
+        return nil, result.Error
+    }
+    return users, nil
 }

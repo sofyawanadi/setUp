@@ -50,3 +50,12 @@ func (r *UserUsecase) InsertLogLogin(c *gin.Context, username string, success bo
 	}
 	return nil
 }
+
+func (r *UserUsecase) GetAllUsers() ([]domain.User, error) {
+	users, err := r.userRepo.GetAllUsers()
+	if err != nil {
+		r.log.Error("failed to get all users", zap.Error(err))
+		return nil, err
+	}
+	return users, nil
+}
