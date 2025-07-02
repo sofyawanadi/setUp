@@ -26,4 +26,4 @@ go.work.sum
 
 .vscode
 __debug_bin*
-*.log
+app.log
