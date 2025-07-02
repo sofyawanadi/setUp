@@ -2,22 +2,26 @@
 package main
 
 import (
-    "fmt"
-    "log"
-    // "os"
-    "strconv"
-    "setUp/config"
-    "setUp/internal/delivery"
-    "setUp/internal/logger"
-    "setUp/internal/repository"
-    "setUp/internal/usecase"
-    "setUp/pkg/database"
+	"fmt"
+	"log"
+	"os"
 
-    "github.com/gin-gonic/gin"
+	// "os"
+	"setUp/internal/delivery"
+	"setUp/internal/logger"
+	"setUp/internal/repository"
+	"setUp/internal/usecase"
+	"setUp/pkg/database"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-    cfg := config.Load()
+    err := godotenv.Load("../.env")
+    if err != nil {
+      log.Fatal("Error loading .env file")
+    }
 
     db, err := database.ConnectPostgres()
     if err != nil {
@@ -32,6 +36,6 @@ func main() {
     r := gin.Default()
     r.POST("/login", userHandler.Login)
 
-    fmt.Println("Server running at port", cfg.Port)
-    r.Run(":" + strconv.Itoa(cfg.Port))
+    fmt.Println("Server running at port", os.Getenv("PORT"))
+    r.Run(":" + os.Getenv("PORT"))
 }
