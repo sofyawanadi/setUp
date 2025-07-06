@@ -1,18 +1,17 @@
-// user.go
-
-package domain
+package services
+import ( 
+	"setUp/internal/domain"
+	per "setUp/internal/services/permissions"
+)
 
 type Role struct {
-	BaseModel
+	domain.BaseModel
 	Name        string       `gorm:"column:name;null"`
 	Const       string       `gorm:"column:const;not null"`
-	Permissions []Permission `gorm:"foreignKey:RoleId"`
+	Permissions []per.Permissions `gorm:"foreignKey:RoleId"`
 }
 
 func (Role) TableName() string {
     return "roles"
 }
 
-type RoleRepository interface {
-	GetRole(username string) (*Role, error)
-}

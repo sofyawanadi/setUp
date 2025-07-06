@@ -1,14 +1,10 @@
-// user.go
-
-package domain
-
-import (
-	// "golang.org/x/crypto/bcrypt"
-	// "gorm.io/gorm"
+package services
+import ( 
+	"setUp/internal/domain"
 )
 
 type User struct {
-	BaseModel
+	domain.BaseModel
 	Username string `gorm:"column:username;unique;not null"`
 	Email    string `gorm:"column:email;unique;not null"`
 	Password string `gorm:"column:password;not null"`
@@ -32,6 +28,3 @@ func (User) TableName() string {
 // 	return nil
 // }
 
-type UserRepository interface {
-	GetByUsername(username string) (*User, error)
-}

@@ -7,12 +7,9 @@ import (
 	"os"
 
 	// "os"
-	"setUp/internal/delivery"
+    userServ "setUp/internal/services/users"
 	"setUp/internal/logger"
-	"setUp/internal/repository"
-	"setUp/internal/usecase"
 	"setUp/pkg/database"
-    "setUp/internal/route"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -31,14 +28,17 @@ func main() {
     }
     log := logger.NewLogger()
 	defer log.Sync()
-    userRepo := repository.NewUserRepository(db,log)
-    userUC := usecase.NewUserUsecase(userRepo,log)
-    userHandler := delivery.NewUserHandler(userUC,log)
 
+    // Initialize repositories and usecases
+    userRepo := userServ.NewUserRepository(db,log)
+    userUC := userServ.NewUserUsecase(userRepo,log)
+    userHandler := userServ.NewUserHandler(*userUC,log)
+
+    // Initialize Gin router
     r := gin.Default()
     apiV1 := r.Group("/api/v1") // Grouping routes under /api/v1
     apiV1.Use(gin.Recovery())
-    route.RouteUser(apiV1, userHandler)
+    userServ.RouteUser(apiV1, userHandler)
 
     fmt.Println("Server running at port", os.Getenv("PORT"))
     r.Run(":" + os.Getenv("PORT"))

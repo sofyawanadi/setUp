@@ -1,23 +1,20 @@
-// user_handler.go
-package delivery
-
+package services
 import (
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"setUp/internal/usecase"
 	"setUp/internal/utils"
 	"setUp/pkg/jwt"
 )
 
 type UserHandler struct {
-	uc  *usecase.UserUsecase
+	uc  UserUsecase
 	log *zap.Logger
 }
 
-func NewUserHandler(uc *usecase.UserUsecase, log *zap.Logger) *UserHandler {
+func NewUserHandler(uc UserUsecase, log *zap.Logger) *UserHandler {
 	return &UserHandler{uc: uc, log: log}
 }
 

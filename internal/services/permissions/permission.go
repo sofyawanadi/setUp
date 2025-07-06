@@ -1,9 +1,10 @@
-// user.go
+package services
+import ( 
+	"setUp/internal/domain"
+)
 
-package domain
-
-type Permission struct {
-	BaseModel
+type Permissions struct {
+	domain.BaseModel
 	RoleId   string `gorm:"not null;column:role_id"`
 	ModuleId string `gorm:"not null;column:module_id"`
 	IsView   bool   `gorm:"default:false;column:is_view"`
@@ -18,10 +19,6 @@ type Permission struct {
 	// IsVerify bool `gorm:"default:false;column:is_verify"`
 }
 
-func (Permission) TableName() string {
+func (Permissions) TableName() string {
     return "permissions"
-}
-
-type PermissionRepository interface {
-	GetAll(username string) (*Permission, error)
 }

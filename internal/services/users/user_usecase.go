@@ -1,29 +1,29 @@
-// user_usecase.go
-package usecase
+package services
 
-import "setUp/internal/domain"
-import "setUp/internal/repository"
-import "go.uber.org/zap"
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+)
+
 type UserUsecaseInterface interface {
-	GetByUsername(c *gin.Context,username string) (*domain.User, error)
-	Login(c *gin.Context,username, password string) (*domain.User, error)
+	GetByUsername(c *gin.Context,username string) (*User, error)
+	Login(c *gin.Context,username, password string) (*User, error)
 	InsertLogLogin(c *gin.Context, username string, success bool)
 }
 
 type UserUsecase struct {
-	userRepo repository.UserRepository
+	userRepo UserRepository
 	log      *zap.Logger
 }
 
-func NewUserUsecase(userRepo repository.UserRepository, log *zap.Logger) *UserUsecase {
+func NewUserUsecase(userRepo UserRepository, log *zap.Logger) *UserUsecase {
 	return &UserUsecase{
 		userRepo: userRepo,
 		log:      log,
 	}
 }
 
-func (r *UserUsecase) GetByEmail(c *gin.Context,email string) (*domain.User, error) {
+func (r *UserUsecase) GetByEmail(c *gin.Context,email string) (*User, error) {
 	user, err := r.userRepo.GetByEmail(email)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func (r *UserUsecase) GetByEmail(c *gin.Context,email string) (*domain.User, err
 	return user, nil
 }
 
-func (r *UserUsecase) Login(c *gin.Context,email, password string) (*domain.User, error) {
+func (r *UserUsecase) Login(c *gin.Context,email, password string) (*User, error) {
 	user, err := r.userRepo.GetByEmail(email)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (r *UserUsecase) InsertLogLogin(c *gin.Context, username string, success bo
 	return nil
 }
 
-func (r *UserUsecase) GetAllUsers() ([]domain.User, error) {
+func (r *UserUsecase) GetAllUsers() ([]User, error) {
 	users, err := r.userRepo.GetAllUsers()
 	if err != nil {
 		r.log.Error("failed to get all users", zap.Error(err))

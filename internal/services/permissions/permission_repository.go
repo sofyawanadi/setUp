@@ -1,17 +1,10 @@
-package repository
-
+package services
 import (
 	"context"
 	"database/sql"
 	"errors"
 	"go.uber.org/zap"
 )
-
-type Permissions struct {
-	ID   int64
-	Name string
-}
-
 type PermissionsRepository interface {
 	Create(ctx context.Context, ug *Permissions) error
 	GetByID(ctx context.Context, id int64) (*Permissions, error) 
@@ -32,15 +25,10 @@ func NewPermissionsRepository(db *sql.DB, log *zap.Logger) PermissionsRepository
 // Create
 func (r *permissionsRepository) Create(ctx context.Context, ug *Permissions) error {
 	query := "INSERT INTO permissions (name) VALUES (?)"
-	result, err := r.DB.ExecContext(ctx, query, ug.Name)
+	_, err := r.DB.ExecContext(ctx, query, ug.RoleId)
 	if err != nil {
 		return err
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		return err
-	}
-	ug.ID = id
 	return nil
 }
 
@@ -49,7 +37,7 @@ func (r *permissionsRepository) GetByID(ctx context.Context, id int64) (*Permiss
 	query := "SELECT id, name FROM permissions WHERE id = ?"
 	row := r.DB.QueryRowContext(ctx, query, id)
 	var ug Permissions
-	if err := row.Scan(&ug.ID, &ug.Name); err != nil {
+	if err := row.Scan(&ug.ID, &ug.RoleId); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
@@ -70,7 +58,7 @@ func (r *permissionsRepository) GetAll(ctx context.Context) ([]Permissions, erro
 	var groups []Permissions
 	for rows.Next() {
 		var ug Permissions
-		if err := rows.Scan(&ug.ID, &ug.Name); err != nil {
+		if err := rows.Scan(&ug.ID, &ug.RoleId); err != nil {
 			return nil, err
 		}
 		groups = append(groups, ug)
@@ -81,7 +69,7 @@ func (r *permissionsRepository) GetAll(ctx context.Context) ([]Permissions, erro
 // Update
 func (r *permissionsRepository) Update(ctx context.Context, ug *Permissions) error {
 	query := "UPDATE permissions SET name = ? WHERE id = ?"
-	_, err := r.DB.ExecContext(ctx, query, ug.Name, ug.ID)
+	_, err := r.DB.ExecContext(ctx, query, ug.RoleId, ug.ID)
 	return err
 }
 

@@ -1,6 +1,4 @@
-// user_repository.go
-package repository
-
+package services
 import (
     "setUp/internal/domain"
     "gorm.io/gorm"
@@ -9,8 +7,8 @@ import (
 )
 
 type UserRepository interface {
-    GetByEmail(email string) (*domain.User, error)
-    GetAllUsers() ([]domain.User, error) 
+    GetByEmail(email string) (*User, error)
+    GetAllUsers() ([]User, error) 
     InsertLogLogins(c *gin.Context, email string, success bool) error
 }
 
@@ -23,8 +21,8 @@ func NewUserRepository(db *gorm.DB, log *zap.Logger) UserRepository {
 	return &userRepository{db,log}
 }
 
-func (r *userRepository) GetByEmail(email string) (*domain.User, error) {
-	var u domain.User
+func (r *userRepository) GetByEmail(email string) (*User, error) {
+	var u User
 	result := r.db.Where("email = ?", email).First(&u)
 	if result.Error == gorm.ErrRecordNotFound {
         return nil, nil
@@ -44,8 +42,8 @@ func (r *userRepository) InsertLogLogins(c *gin.Context,Email string, success bo
     return nil
 }
 
-func (r *userRepository) GetAllUsers() ([]domain.User, error) {
-    var users []domain.User
+func (r *userRepository) GetAllUsers() ([]User, error) {
+    var users []User
     result := r.db.Select("id", "email", "username", "created_at", "updated_at").Find(&users)
     if result.Error != nil {
         r.log.Error("failed to get all users", zap.Error(result.Error))

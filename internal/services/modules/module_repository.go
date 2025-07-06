@@ -1,4 +1,4 @@
-package repository
+package services
 
 import (
 	"context"
@@ -7,17 +7,13 @@ import (
 	"go.uber.org/zap"
 )
 
-type Module struct {
-	ID   int64
-	Name string
-}
 
 type ModuleRepository interface {
 	Create(ctx context.Context, ug *Module) error
 	GetByID(ctx context.Context, id int64) (*Module, error) 
 	Delete(ctx context.Context, id int64) error
-	GetAll(ctx context.Context) ([]Module, error) 
-	Update(ctx context.Context, ug *Module) error 
+	GetAll(ctx context.Context) ([]Module, error)
+	Update(ctx context.Context, ug *Module) error
 }
 
 type moduleRepository struct {
@@ -32,15 +28,10 @@ func NewModuleRepository(db *sql.DB, log *zap.Logger) ModuleRepository {
 // Create
 func (r *moduleRepository) Create(ctx context.Context, ug *Module) error {
 	query := "INSERT INTO modules (name) VALUES (?)"
-	result, err := r.DB.ExecContext(ctx, query, ug.Name)
+	_, err := r.DB.ExecContext(ctx, query, ug.Name)
 	if err != nil {
 		return err
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		return err
-	}
-	ug.ID = id
 	return nil
 }
 

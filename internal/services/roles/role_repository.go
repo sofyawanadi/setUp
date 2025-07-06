@@ -1,4 +1,4 @@
-package repository
+package services
 
 import (
 	"context"
@@ -6,11 +6,6 @@ import (
 	"errors"
 	"go.uber.org/zap"
 )
-
-type Role struct {
-	ID   int64
-	Name string
-}
 
 type RoleRepository interface {
 	Create(ctx context.Context, ug *Role) error
@@ -32,15 +27,10 @@ func NewRoleRepository(db *sql.DB, log *zap.Logger) RoleRepository {
 // Create
 func (r *roleRepository) Create(ctx context.Context, ug *Role) error {
 	query := "INSERT INTO roles (name) VALUES (?)"
-	result, err := r.DB.ExecContext(ctx, query, ug.Name)
+	_, err := r.DB.ExecContext(ctx, query, ug.Name)
 	if err != nil {
 		return err
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		return err
-	}
-	ug.ID = id
 	return nil
 }
 
