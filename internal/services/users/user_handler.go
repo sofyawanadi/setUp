@@ -91,8 +91,21 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 func (h *UserHandler) GetAllUsers(c *gin.Context) {
 	filters := map[string]string{}
-	if name := c.Query("name"); name != "" {
-		filters["name"] = "%" + name + "%"
+	// Buat filter dinamis berdasarkan query parameters
+	for key, values := range c.Request.URL.Query() {
+		// Lewati parameter yang sudah digunakan untuk sorting dan pagination
+		if key == "sort_by" || key == "sort_order" || key == "page" || key == "page_size" {
+			continue
+		}
+		// Ambil nilai pertama dari slice values
+		if len(values) > 0 && values[0] != "" {
+			// Contoh: untuk pencarian nama bisa gunakan LIKE
+			if key == "name" {
+				filters[key] = "%" + values[0] + "%"
+			} else {
+				filters[key] = values[0]
+			}
+		}
 	}
 	params := utils.QueryParams{
 		Filters:   filters,

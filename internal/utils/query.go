@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"gorm.io/gorm"
@@ -18,6 +19,7 @@ type QueryParams struct {
 // ApplyQuery applies filter, sort, and pagination to the given DB query.
 func ApplyQuery(db *gorm.DB, params QueryParams) *gorm.DB {
 	// Filters
+	log.Print("Applying filters: ", params.Filters)
 	for field, value := range params.Filters {
 		// Basic LIKE filter, can be adjusted for exact match or numeric, etc.
 		if strings.Contains(value, "%") {
@@ -45,6 +47,5 @@ func ApplyQuery(db *gorm.DB, params QueryParams) *gorm.DB {
 	}
 	offset := (params.Page - 1) * params.PageSize
 	db = db.Offset(offset).Limit(params.PageSize)
-
 	return db
 }
