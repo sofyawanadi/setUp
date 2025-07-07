@@ -1,6 +1,8 @@
 package services
 
 import (
+	"setUp/internal/utils"
+
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -51,8 +53,8 @@ func (r *UserUsecase) InsertLogLogin(c *gin.Context, username string, success bo
 	return nil
 }
 
-func (r *UserUsecase) GetAllUsers() ([]User, error) {
-	users, err := r.userRepo.GetAllUsers()
+func (r *UserUsecase) GetAllUsers(c *gin.Context, params utils.QueryParams) ([]User, error) {
+	users, err := r.userRepo.GetAllUsers(c, params)
 	if err != nil {
 		r.log.Error("failed to get all users", zap.Error(err))
 		return nil, err

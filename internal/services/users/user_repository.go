@@ -1,14 +1,17 @@
 package services
+
 import (
-    "setUp/internal/domain"
-    "gorm.io/gorm"
-    "go.uber.org/zap"
-    "github.com/gin-gonic/gin"
+	"setUp/internal/domain"
+	"setUp/internal/utils"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 type UserRepository interface {
     GetByEmail(email string) (*User, error)
-    GetAllUsers() ([]User, error) 
+    GetAllUsers(c *gin.Context, params utils.QueryParams) ([]User, error)
     InsertLogLogins(c *gin.Context, email string, success bool) error
 }
 
@@ -42,12 +45,14 @@ func (r *userRepository) InsertLogLogins(c *gin.Context,Email string, success bo
     return nil
 }
 
-func (r *userRepository) GetAllUsers() ([]User, error) {
+func (r *userRepository) GetAllUsers(c *gin.Context, params utils.QueryParams) ([]User, error) {
     var users []User
-    result := r.db.Select("id", "email", "username", "created_at", "updated_at").Find(&users)
-    if result.Error != nil {
-        r.log.Error("failed to get all users", zap.Error(result.Error))
-        return nil, result.Error
+    result := r.db.Select("id", "email", "username", "created_at", "updated_at")
+    query := utils.ApplyQuery(result, params)
+    if err := query.Find(&users).Error; err != nil {
+        r.log.Error("failed to get all users", zap.Error(err))
+        return nil, err
     }
+
     return users, nil
 }

@@ -90,7 +90,18 @@ func (h *UserHandler) Login(c *gin.Context) {
 }
 
 func (h *UserHandler) GetAllUsers(c *gin.Context) {
-	users, err := h.uc.GetAllUsers()
+	filters := map[string]string{}
+	if name := c.Query("name"); name != "" {
+		filters["name"] = "%" + name + "%"
+	}
+	params := utils.QueryParams{
+		Filters:   filters,
+		SortBy:    c.DefaultQuery("sort_by", "created_at"),
+		SortOrder: c.DefaultQuery("sort_order", "desc"),
+		Page:      utils.ParseInt(c.DefaultQuery("page", "1")),
+		PageSize:  utils.ParseInt(c.DefaultQuery("page_size", "10")),
+	}
+	users, err := h.uc.GetAllUsers(c, params)
 	if err != nil {
 		h.log.Error("Error getting all users", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, utils.ResponseError(utils.ErrorMessage))

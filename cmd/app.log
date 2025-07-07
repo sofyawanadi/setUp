@@ -20,3 +20,4 @@
 {"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-02T23:45:09.743+0700","caller":"delivery/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
 {"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-03T00:02:18.017+0700","caller":"delivery/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
 {"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-06T14:49:52.387+0700","caller":"users/user_handler.go:75","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
+{"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-07T23:22:28.347+0700","caller":"users/user_handler.go:75","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
