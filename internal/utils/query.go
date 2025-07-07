@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
-
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -48,4 +48,24 @@ func ApplyQuery(db *gorm.DB, params QueryParams) *gorm.DB {
 	offset := (params.Page - 1) * params.PageSize
 	db = db.Offset(offset).Limit(params.PageSize)
 	return db
+}
+
+func GetFilter(c *gin.Context ) map[string]string {
+	filters := make(map[string]string)
+	for key, values := range c.Request.URL.Query() {
+		// Lewati parameter yang sudah digunakan untuk sorting dan pagination
+		if key == "sort_by" || key == "sort_order" || key == "page" || key == "page_size" {
+			continue
+		}
+		// Ambil nilai pertama dari slice values
+		if len(values) > 0 && values[0] != "" {
+			// Contoh: untuk pencarian nama bisa gunakan LIKE
+			if key == "name" {
+				filters[key] = "%" + values[0] + "%"
+			} else {
+				filters[key] = values[0]
+			}
+		}
+	}
+	return filters
 }
