@@ -10,11 +10,11 @@ import (
 )
 
 type UserHandler struct {
-	uc  UserUsecase
+	uc  UserUsecaseInterface
 	log *zap.Logger
 }
 
-func NewUserHandler(uc UserUsecase, log *zap.Logger) *UserHandler {
+func NewUserHandler(uc UserUsecaseInterface, log *zap.Logger) *UserHandler {
 	return &UserHandler{uc: uc, log: log}
 }
 
@@ -95,15 +95,15 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 		Filters:   filters,
 		SortBy:    c.DefaultQuery("sort_by", "created_at"),
 		SortOrder: c.DefaultQuery("sort_order", "desc"),
-		Page:      utils.ParseInt(c.DefaultQuery("page", "1")),
-		PageSize:  utils.ParseInt(c.DefaultQuery("page_size", "10")),
+		Page:      int64(utils.ParseInt(c.DefaultQuery("page", "1"))),
+		PageSize:  int64(utils.ParseInt(c.DefaultQuery("page_size", "10"))),
 	}
-	users, err := h.uc.GetAllUsers(c, params)
+	users, totalData, err := h.uc.GetAllUsers(c, params)
 	if err != nil {
 		h.log.Error("Error getting all users", zap.Error(err))
-		c.JSON(http.StatusInternalServerError, utils.ResponseError(utils.ErrorMessage))
+		utils.ErrorResp(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"users": users})
+	utils.SuccessWithPaginationResp(c, "Users retrieved successfully", users, params.Page, params.PageSize, totalData)
 	return
 }

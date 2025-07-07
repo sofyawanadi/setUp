@@ -32,7 +32,7 @@ func main() {
     // Initialize repositories and usecases
     userRepo := userServ.NewUserRepository(db,log)
     userUC := userServ.NewUserUsecase(userRepo,log)
-    userHandler := userServ.NewUserHandler(*userUC,log)
+    userHandler := userServ.NewUserHandler(userUC,log)
 
     // Initialize Gin router
     r := gin.Default()

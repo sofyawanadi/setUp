@@ -12,8 +12,8 @@ type QueryParams struct {
 	Filters    map[string]string // e.g. map["name"] = "john"
 	SortBy     string            // e.g. "created_at"
 	SortOrder  string            // "asc" or "desc"
-	Page       int               // page number
-	PageSize   int               // items per page
+	Page       int64               // page number
+	PageSize   int64               // items per page
 }
 
 // ApplyQuery applies filter, sort, and pagination to the given DB query.
@@ -46,11 +46,11 @@ func ApplyQuery(db *gorm.DB, params QueryParams) *gorm.DB {
 		params.PageSize = 10
 	}
 	offset := (params.Page - 1) * params.PageSize
-	db = db.Offset(offset).Limit(params.PageSize)
+	db = db.Offset(int(offset)).Limit(int(params.PageSize))
 	return db
 }
 
-func GetFilter(c *gin.Context ) map[string]string {
+func GetFilter(c *gin.Context) map[string]string {
 	filters := make(map[string]string)
 	for key, values := range c.Request.URL.Query() {
 		// Lewati parameter yang sudah digunakan untuk sorting dan pagination

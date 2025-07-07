@@ -13,6 +13,7 @@ type UserRepository interface {
     GetByEmail(email string) (*User, error)
     GetAllUsers(c *gin.Context, params utils.QueryParams) ([]User, error)
     InsertLogLogins(c *gin.Context, email string, success bool) error
+    GetCountUsers(c *gin.Context, params utils.QueryParams) (int64, error)
 }
 
 type userRepository struct {
@@ -55,4 +56,15 @@ func (r *userRepository) GetAllUsers(c *gin.Context, params utils.QueryParams) (
     }
 
     return users, nil
+}
+
+func (r *userRepository) GetCountUsers(c *gin.Context, params utils.QueryParams) (int64, error) {
+    var count int64
+    result := r.db.Model(&User{})
+    query := utils.ApplyQuery(result, params)
+    if err := query.Count(&count).Error; err != nil {
+        r.log.Error("failed to get user count", zap.Error(err))
+        return 0, err
+    }
+    return count, nil
 }
