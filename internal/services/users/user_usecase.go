@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"setUp/internal/utils"
 
 	"github.com/gin-gonic/gin"
@@ -12,6 +13,7 @@ type UserUsecaseInterface interface {
 	Login(c *gin.Context,email, password string) (*User, error) 
 	InsertLogLogin(c *gin.Context, email string, success bool) error
 	GetAllUsers(c *gin.Context, params utils.QueryParams) ([]User,int64, error)
+	GetByID(c *gin.Context) (*User, error) 
 }
 
 type userUsecase struct {
@@ -66,4 +68,22 @@ func (r *userUsecase) GetAllUsers(c *gin.Context, params utils.QueryParams) ([]U
 		return nil, 0, err
 	}
 	return users,count, nil
+}
+
+func (r *userUsecase) GetByID(c *gin.Context) (*User, error) {
+	userId, exists := c.Get("userID")
+	if !exists  {
+		r.log.Error("failed to get user ID from context")
+		return nil, fmt.Errorf("failed to get user ID from context")
+	}
+	userIDStr, ok := userId.(string)
+	if !ok {
+		r.log.Error("user ID in context is not a string")
+		return nil, fmt.Errorf("user ID in context is not a string")
+	}
+	user, err2 := r.userRepo.GetByID(userIDStr)
+	if err2 != nil {
+		return nil, err2
+	}
+	return user, nil
 }

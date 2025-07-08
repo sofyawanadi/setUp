@@ -14,6 +14,7 @@ type UserRepository interface {
     GetAllUsers(c *gin.Context, params utils.QueryParams) ([]User, error)
     InsertLogLogins(c *gin.Context, email string, success bool) error
     GetCountUsers(c *gin.Context, params utils.QueryParams) (int64, error)
+    GetByID(id string) (*User, error)
 }
 
 type userRepository struct {
@@ -67,4 +68,12 @@ func (r *userRepository) GetCountUsers(c *gin.Context, params utils.QueryParams)
         return 0, err
     }
     return count, nil
+}
+func (r *userRepository) GetByID(id string) (*User, error) {
+    var u User
+    result := r.db.Where("id = ?", id).First(&u)
+    if result.Error == gorm.ErrRecordNotFound {
+        return nil, nil
+    }
+    return &u, result.Error
 }

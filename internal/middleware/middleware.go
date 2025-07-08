@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	// "log"
 	"net/http"
 	"os"
 	"strings"
@@ -38,8 +39,11 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		// Simpan claims ke context jika ingin dipakai nanti
 		if claims, ok := token.Claims.(jwt.MapClaims); ok {
-			c.Set("userID", claims["sub"])
+			// log.Print("Authenticated user ID:", claims)
+			c.Set("userID", claims["id"])
 			c.Set("exp", claims["exp"])
+			c.Set("iat", claims["iat"])
+			c.Set("email", claims["email"])
 		}
 
 		c.Next()

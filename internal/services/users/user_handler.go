@@ -107,3 +107,19 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 	utils.SuccessWithPaginationResp(c, "Users retrieved successfully", users, params.Page, params.PageSize, totalData)
 	return
 }
+
+func (h *UserHandler) GetByID(c *gin.Context) {
+	user, err := h.uc.GetByID(c)
+	if err != nil {
+		h.log.Error("Error getting user by ID", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+	if user == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+	user.Password = "" // Hapus password dari response
+	utils.SuccessResp(c, "User retrieved successfully", user)
+	return
+}	

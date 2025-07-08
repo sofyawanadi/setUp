@@ -8,6 +8,7 @@ func RouteUser(rg *gin.RouterGroup, userHandler *UserHandler) {
 	rg.POST("/login", userHandler.Login)
 	userGroup := rg.Group("/users").Use(middleware.AuthMiddleware()) 
 	{
-		userGroup.GET("/get", userHandler.GetAllUsers)
+		userGroup.GET("/", userHandler.GetAllUsers)
+		userGroup.GET("/get", userHandler.GetByID)
 	}
 }
