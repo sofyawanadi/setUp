@@ -1,12 +1,15 @@
 package services
+
 import (
 	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"setUp/internal/utils"
 	"setUp/pkg/jwt"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+	// "path/filepath"
 )
 
 type UserHandler struct {
@@ -74,6 +77,12 @@ func (h *UserHandler) Login(c *gin.Context) {
 	}
 	h.log.Info("Login Success", zap.String("Email", req.Email), zap.String("client_ip", clientIP))
 
+	utils.SendMail([]string{req.Email}, "Login Notification", "login_notification.html", map[string]interface{}{
+		"Username": user.Username,
+		"Email":    user.Email,
+		"ClientIP": clientIP,
+	})
+
 	user.Password = "" // Hapus password dari response
 	c.JSON(http.StatusOK, gin.H{
 		"token":         token,
@@ -84,8 +93,8 @@ func (h *UserHandler) Login(c *gin.Context) {
 			"name":    user.Username,
 			"address": user.Address,
 		},
-		"message":       "Login successful",
-		"client_ip":     clientIP,
+		"message":   "Login successful",
+		"client_ip": clientIP,
 	})
 }
 
@@ -122,4 +131,4 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 	user.Password = "" // Hapus password dari response
 	utils.SuccessResp(c, "User retrieved successfully", user)
 	return
-}	
+}
