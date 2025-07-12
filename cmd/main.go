@@ -8,6 +8,8 @@ import (
 
 	// "os"
     userServ "setUp/internal/services/users"
+    uploadServ "setUp/internal/services/upload"
+    minioServ "setUp/internal/minio"
 	"setUp/internal/logger"
 	"setUp/pkg/database"
 
@@ -26,19 +28,25 @@ func main() {
     if err != nil {
         log.Fatalf("failed to connect to DB: %v", err)
     }
-    log := logger.NewLogger()
-	defer log.Sync()
-
+    logZap := logger.NewLogger()
+	defer logZap.Sync()
+    // Initialize MinIO client
+    err = minioServ.InitMinio(logZap)
+    if err != nil {
+        log.Fatal("failed to connect to MinIO: %v", err)
+    }
     // Initialize repositories and usecases
-    userRepo := userServ.NewUserRepository(db,log)
-    userUC := userServ.NewUserUsecase(userRepo,log)
-    userHandler := userServ.NewUserHandler(userUC,log)
+    userRepo := userServ.NewUserRepository(db,logZap)
+    userUC := userServ.NewUserUsecase(userRepo,logZap)
+    userHandler := userServ.NewUserHandler(userUC,logZap)
+    uploadHandler := uploadServ.NewUploadHandler(logZap)
 
     // Initialize Gin router
     r := gin.Default()
     apiV1 := r.Group("/api/v1") // Grouping routes under /api/v1
     apiV1.Use(gin.Recovery())
     userServ.RouteUser(apiV1, userHandler)
+    uploadServ.RouteUpload(apiV1, uploadHandler)
 
     fmt.Println("Server running at port", os.Getenv("PORT"))
     r.Run(":" + os.Getenv("PORT"))

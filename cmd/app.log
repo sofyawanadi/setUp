@@ -43,3 +43,9 @@
 {"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-10T22:46:30.956+0700","caller":"users/user_handler.go:76","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
 {"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-10T22:48:25.212+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
 {"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-10T22:49:27.081+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
+{"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-12T14:43:19.648+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
+{"level":"\u001b[33mWARN\u001b[0m","timestamp":"2025-07-12T14:46:02.513+0700","caller":"utils/validator.go:31","message":"Validasi gagal","errors":"{\n  \"FileName\": \"Field 'FileName' tidak valid (rule: required)\"\n}"}
+{"level":"\u001b[33mWARN\u001b[0m","timestamp":"2025-07-12T14:46:22.304+0700","caller":"utils/validator.go:31","message":"Validasi gagal","errors":"{\n  \"FileName\": \"Field 'FileName' tidak valid (rule: required)\"\n}"}
+{"level":"\u001b[33mWARN\u001b[0m","timestamp":"2025-07-12T14:49:46.242+0700","caller":"utils/validator.go:31","message":"Validasi gagal","errors":"{\n  \"Email\": \"Field 'Email' tidak valid (rule: required)\"\n}"}
+{"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-12T14:49:58.907+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
+{"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-12T18:24:08.884+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
