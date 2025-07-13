@@ -90,10 +90,6 @@ func (h *UploadHandler) GetDownloadFile(c *gin.Context) {
 		fmt.Println("Error: file_name parameter is missing")
 		utils.ErrorResp(c, http.StatusBadRequest, "Invalid request")
 		return
-		// }
-		// // Panggil helper untuk validasi
-		// if !utils.ValidateRequest(&req, c, h.log) {
-		// 	return
 	}
 
 	obj, err := minio.DownloadFileFromMinio(h.log, filename, "./")
@@ -103,18 +99,20 @@ func (h *UploadHandler) GetDownloadFile(c *gin.Context) {
 		return
 	}
 	defer obj.Close()
-	c.Header("Content-Disposition", "attachment; filename="+filename)
-	c.Header("Content-Type", "image/png")
-	// Stream file ke client
 	stat, err := obj.Stat()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		utils.ErrorResp(c, http.StatusInternalServerError, "Failed to generate file")
 		return
 	}
+	c.Header("Content-Disposition", "attachment; filename="+filename)
+	c.Header("Content-Type", stat.ContentType)
 
-	c.DataFromReader(http.StatusOK, stat.Size, "image/jpeg", obj, nil)
-	// c.Stream(func(w io.Writer) bool {
-	// 	_, err := io.Copy(w, obj)
-	// 	return err == nil
-	// })
+	c.DataFromReader(http.StatusOK, stat.Size,stat.ContentType, obj, nil)
+	
+	// Stream file ke client
+	//
+	//	c.Stream(func(w io.Writer) bool {
+	//		_, err := io.Copy(w, obj)
+	//		return err == nil
+	//	})
 }
