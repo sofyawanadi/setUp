@@ -116,7 +116,6 @@ func DownloadFileFromMinio(log *zap.Logger, objectname string, filePath string)(
 		log.Error("Error downloading file from MinIO", zap.Error(err))
 		return nil,err
 	}
-	defer obj.Close()
 
 	return obj,nil
 }

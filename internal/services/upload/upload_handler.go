@@ -2,7 +2,7 @@ package services
 
 import (
 	"fmt"
-	"io"
+	// "io"
 	"net/http"
 	"time"
 
@@ -48,8 +48,8 @@ func (h *UploadHandler) UploadFile(c *gin.Context) {
 		return
 	}
 	h.log.Info("File upload handler called")
-	utils.SuccessResp(c,"success upload file",map[string]string{
-		"filename":filename,
+	utils.SuccessResp(c, "success upload file", map[string]string{
+		"filename": filename,
 	})
 }
 
@@ -90,10 +90,10 @@ func (h *UploadHandler) GetDownloadFile(c *gin.Context) {
 		fmt.Println("Error: file_name parameter is missing")
 		utils.ErrorResp(c, http.StatusBadRequest, "Invalid request")
 		return
-	// }
-	// // Panggil helper untuk validasi
-	// if !utils.ValidateRequest(&req, c, h.log) {
-	// 	return
+		// }
+		// // Panggil helper untuk validasi
+		// if !utils.ValidateRequest(&req, c, h.log) {
+		// 	return
 	}
 
 	obj, err := minio.DownloadFileFromMinio(h.log, filename, "./")
@@ -106,8 +106,15 @@ func (h *UploadHandler) GetDownloadFile(c *gin.Context) {
 	c.Header("Content-Disposition", "attachment; filename="+filename)
 	c.Header("Content-Type", "image/png")
 	// Stream file ke client
-	c.Stream(func(w io.Writer) bool {
-		_, err := io.Copy(w, obj)
-		return err == nil
-	})
+	stat, err := obj.Stat()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.DataFromReader(http.StatusOK, stat.Size, "image/jpeg", obj, nil)
+	// c.Stream(func(w io.Writer) bool {
+	// 	_, err := io.Copy(w, obj)
+	// 	return err == nil
+	// })
 }
