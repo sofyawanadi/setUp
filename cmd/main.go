@@ -12,7 +12,7 @@ import (
     minioServ "setUp/internal/minio"
 	"setUp/internal/logger"
 	"setUp/pkg/database"
-
+    "github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
@@ -43,6 +43,17 @@ func main() {
 
     // Initialize Gin router
     r := gin.Default()
+
+    // Gunakan CORS middleware
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"}, // ganti dengan origin kamu
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		// MaxAge:           12 * time.Hour,
+	}))
+
     apiV1 := r.Group("/api/v1") // Grouping routes under /api/v1
     apiV1.Use(gin.Recovery())
     userServ.RouteUser(apiV1, userHandler)

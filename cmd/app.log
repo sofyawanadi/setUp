@@ -53,3 +53,6 @@
 {"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-13T15:19:06.393+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
 {"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-13T18:33:05.186+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
 {"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-13T18:35:01.387+0700","caller":"upload/upload_handler.go:50","message":"File upload handler called"}
+{"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-13T19:30:01.162+0700","caller":"upload/upload_handler.go:50","message":"File upload handler called"}
+{"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-13T19:31:29.289+0700","caller":"upload/upload_handler.go:50","message":"File upload handler called"}
+{"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-13T19:43:52.978+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}

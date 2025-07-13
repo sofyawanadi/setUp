@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -23,23 +24,22 @@ func NewUploadHandler(log *zap.Logger) *UploadHandler {
 	return &UploadHandler{log: log}
 }
 
-
 func (h *UploadHandler) UploadFile(c *gin.Context) {
 	file, err := c.FormFile("file")
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "File tidak ditemukan"})
-			return
-		}
-		// Simpan file ke disk (sementara)
-		tempFilePath := "./" + file.Filename
-		if err := c.SaveUploadedFile(file, tempFilePath); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal simpan file sementara"})
-			return
-		}
-	timeNow :=time.Now().Unix() 
-	filename := fmt.Sprintf("%d-%s",timeNow,file.Filename )
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "File tidak ditemukan"})
+		return
+	}
+	// Simpan file ke disk (sementara)
+	tempFilePath := "./" + file.Filename
+	if err := c.SaveUploadedFile(file, tempFilePath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal simpan file sementara"})
+		return
+	}
+	timeNow := time.Now().Unix()
+	filename := fmt.Sprintf("%d-%s", timeNow, file.Filename)
 	contentType := file.Header.Get("Content-Type")
-	
+
 	// // Implement file upload logic here
 	err = minio.UploadFileInMinio(h.log, filename, tempFilePath, contentType)
 	if err != nil {
@@ -48,7 +48,9 @@ func (h *UploadHandler) UploadFile(c *gin.Context) {
 		return
 	}
 	h.log.Info("File upload handler called")
-	c.JSON(200, gin.H{"message": "File uploaded successfully"})
+	utils.SuccessResp(c,"success upload file",map[string]string{
+		"filename":filename,
+	})
 }
 
 type PresignedUrlRequest struct {
@@ -79,4 +81,33 @@ func (h *UploadHandler) GetPresignedUrl(c *gin.Context) {
 	}
 	utils.SuccessResp(c, "Presigned URL generated successfully",
 		map[string]interface{}{"url": presignedURL})
+}
+
+func (h *UploadHandler) GetDownloadFile(c *gin.Context) {
+	// var req PresignedUrlRequest
+	filename := c.Param("filename")
+	if filename == "" {
+		fmt.Println("Error: file_name parameter is missing")
+		utils.ErrorResp(c, http.StatusBadRequest, "Invalid request")
+		return
+	// }
+	// // Panggil helper untuk validasi
+	// if !utils.ValidateRequest(&req, c, h.log) {
+	// 	return
+	}
+
+	obj, err := minio.DownloadFileFromMinio(h.log, filename, "./")
+	if err != nil {
+		h.log.Error("Error generating File", zap.Error(err))
+		utils.ErrorResp(c, http.StatusInternalServerError, "Failed to generate file")
+		return
+	}
+	defer obj.Close()
+	c.Header("Content-Disposition", "attachment; filename="+filename)
+	c.Header("Content-Type", "image/png")
+	// Stream file ke client
+	c.Stream(func(w io.Writer) bool {
+		_, err := io.Copy(w, obj)
+		return err == nil
+	})
 }

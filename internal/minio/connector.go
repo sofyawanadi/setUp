@@ -3,6 +3,7 @@ package minio
 import (
 	"context"
 	"fmt"
+
 	// "net/url"
 	"os"
 	"time"
@@ -36,7 +37,7 @@ func InitMinio(log *zap.Logger) error {
 	MinioSecretKey := os.Getenv("MINIO_SECRET_KEY")
 	MinioBucket := os.Getenv("MINIO_BUCKET")
 
-	fmt.Println(MinioEndpt, "+", MinioAccessKey,"+", MinioSecretKey, "+",MinioBucket)
+	fmt.Println(MinioEndpt, "+", MinioAccessKey, "+", MinioSecretKey, "+", MinioBucket)
 	if MinioEndpt == "" || MinioAccessKey == "" || MinioSecretKey == "" || MinioBucket == "" {
 		fmt.Println("Minio environment variables are not set properly.")
 		return fmt.Errorf("minio environment variables are not set properly")
@@ -95,25 +96,32 @@ func GetPresignedURLFromMinio(log *zap.Logger, objectname string) (string, error
 }
 
 // minio/connector.go
-func DownloadFileFromMinio(log *zap.Logger, objectname string, filePath string) error {
+func DownloadFileFromMinio(log *zap.Logger, objectname string, filePath string)(*minio.Object, error ){
 	// Uncomment this in case the code goes into panic at any point of time
 	// defer HandlePanic()
 	// Download and save the object as a file in the local filesystem.
 	MinioBucket := os.Getenv("MINIO_BUCKET")
 	if MinioBucket == "" {
 		fmt.Println("MINIO_BUCKET environment variable is not set.")
-		return fmt.Errorf("MINIO_BUCKET environment variable is not set")
+		return nil,fmt.Errorf("MINIO_BUCKET environment variable is not set")
 	}
 
-	err := GetMinio(log).FGetObject(context.Background(), MinioBucket, objectname, filePath, minio.GetObjectOptions{})
+	// err := GetMinio(log).FGetObject(context.Background(), MinioBucket, objectname, filePath, minio.GetObjectOptions{})
+	// if err != nil {
+	// 	log.Error("Error downloading file from MinIO", zap.Error(err))
+	// 	return err
+	// }
+	obj,	err := GetMinio(log).GetObject(context.Background(), MinioBucket, objectname,  minio.GetObjectOptions{})
 	if err != nil {
 		log.Error("Error downloading file from MinIO", zap.Error(err))
-		return err
+		return nil,err
 	}
-	return nil
+	defer obj.Close()
+
+	return obj,nil
 }
 
-func UploadFileInMinio(log *zap.Logger, objectname string, filePath string, contentType string)error{
+func UploadFileInMinio(log *zap.Logger, objectname string, filePath string, contentType string) error {
 
 	// Upload the test file with FPutObject
 
@@ -125,7 +133,7 @@ func UploadFileInMinio(log *zap.Logger, objectname string, filePath string, cont
 	info, err := GetMinio(log).FPutObject(context.Background(), MinioBucket, objectname, filePath, minio.PutObjectOptions{ContentType: contentType})
 	if err != nil {
 		log.Error("Error uploading file to MinIO", zap.Error(err))
-		return fmt.Errorf("Error uploading file to MinIO: %w", err)
+		return fmt.Errorf("error uploading file to MinIO: %w", err)
 	}
 	fmt.Printf("Successfully uploaded %s of size %d\n", objectname, info.Size)
 	return nil
