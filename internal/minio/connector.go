@@ -78,7 +78,7 @@ func GetPresignedURLFromMinio(log *zap.Logger, objectname string) (string, error
 		log.Error("MINIO_BUCKET environment variable is not set.")
 		return "", fmt.Errorf("MINIO_BUCKET environment variable is not set")
 	}
-	// reqParams := make(url.Values)
+	// generate
 
 	// Gernerate presigned get object url.
 	presignedURL, err := GetMinio(log).PresignedPutObject(

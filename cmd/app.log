@@ -49,3 +49,7 @@
 {"level":"\u001b[33mWARN\u001b[0m","timestamp":"2025-07-12T14:49:46.242+0700","caller":"utils/validator.go:31","message":"Validasi gagal","errors":"{\n  \"Email\": \"Field 'Email' tidak valid (rule: required)\"\n}"}
 {"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-12T14:49:58.907+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
 {"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-12T18:24:08.884+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
+{"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-13T01:12:21.611+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
+{"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-13T15:19:06.393+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
+{"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-13T18:33:05.186+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
+{"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-13T18:35:01.387+0700","caller":"upload/upload_handler.go:50","message":"File upload handler called"}
