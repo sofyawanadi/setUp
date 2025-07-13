@@ -36,6 +36,7 @@ func InitMinio(log *zap.Logger) error {
 	MinioAccessKey := os.Getenv("MINIO_ACCESS_KEY")
 	MinioSecretKey := os.Getenv("MINIO_SECRET_KEY")
 	MinioBucket := os.Getenv("MINIO_BUCKET")
+	ctx := context.Background()
 
 	fmt.Println(MinioEndpt, "+", MinioAccessKey, "+", MinioSecretKey, "+", MinioBucket)
 	if MinioEndpt == "" || MinioAccessKey == "" || MinioSecretKey == "" || MinioBucket == "" {
@@ -51,14 +52,37 @@ func InitMinio(log *zap.Logger) error {
 		fmt.Println("Minio failed to connect:", err)
 		return fmt.Errorf("minio failed to connect: %w", err)
 	}
-	found, err := conn.BucketExists(context.Background(), MinioBucket)
+	found, err := conn.BucketExists(ctx, MinioBucket)
 	if err != nil {
 		return fmt.Errorf("minio bucket existence check failed: %w", err)
 	}
+	location := "us-east-1"
 	if found {
 		fmt.Println("Connection to Minio successful.")
 		fmt.Println("Endpoint: " + MinioEndpt)
 		fmt.Println("Bucket  : " + MinioBucket)
+	}else{
+		err = conn.MakeBucket(ctx, MinioBucket, minio.MakeBucketOptions{Region: location})
+		if err != nil {
+			return fmt.Errorf("minio failed to connect: %w", err)
+		}
+		fmt.Println("✅ Bucket dibuat:", MinioBucket)
+	}
+
+	// Set policy public read-only
+	policy := fmt.Sprintf(`{
+		"Version":"2012-10-17",
+		"Statement":[{
+			"Effect":"Allow",
+			"Principal":{"AWS":["*"]},
+			"Action":["s3:GetObject"],
+			"Resource":["arn:aws:s3:::%s/*"]
+		}]
+	}`, MinioBucket)
+
+	err = conn.SetBucketPolicy(ctx, MinioBucket, policy)
+	if err != nil {
+		return fmt.Errorf("minio failed to connect: %w", err)
 	}
 
 	s3Client = conn
@@ -82,7 +106,7 @@ func GetPresignedURLFromMinio(log *zap.Logger, objectname string) (string, error
 	// generate
 
 	// Gernerate presigned get object url.
-	presignedURL, err := GetMinio(log).PresignedPutObject(
+	presignedURL, err := s3Client.PresignedPutObject(
 		context.Background(),
 		MinioBucket,
 		objectname,
@@ -106,12 +130,12 @@ func DownloadFileFromMinio(log *zap.Logger, objectname string, filePath string)(
 		return nil,fmt.Errorf("MINIO_BUCKET environment variable is not set")
 	}
 
-	// err := GetMinio(log).FGetObject(context.Background(), MinioBucket, objectname, filePath, minio.GetObjectOptions{})
+	// err := s3Client.FGetObject(ctx, MinioBucket, objectname, filePath, minio.GetObjectOptions{})
 	// if err != nil {
 	// 	log.Error("Error downloading file from MinIO", zap.Error(err))
 	// 	return err
 	// }
-	obj,	err := GetMinio(log).GetObject(context.Background(), MinioBucket, objectname,  minio.GetObjectOptions{})
+	obj,	err := s3Client.GetObject(context.Background(), MinioBucket, objectname,  minio.GetObjectOptions{})
 	if err != nil {
 		log.Error("Error downloading file from MinIO", zap.Error(err))
 		return nil,err
@@ -129,7 +153,7 @@ func UploadFileInMinio(log *zap.Logger, objectname string, filePath string, cont
 		fmt.Println("MINIO_BUCKET environment variable is not set.")
 		return fmt.Errorf("MINIO_BUCKET environment variable is not set")
 	}
-	info, err := GetMinio(log).FPutObject(context.Background(), MinioBucket, objectname, filePath, minio.PutObjectOptions{ContentType: contentType})
+	info, err := s3Client.FPutObject(context.Background(), MinioBucket, objectname, filePath, minio.PutObjectOptions{ContentType: contentType})
 	if err != nil {
 		log.Error("Error uploading file to MinIO", zap.Error(err))
 		return fmt.Errorf("error uploading file to MinIO: %w", err)
