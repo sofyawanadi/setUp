@@ -2,7 +2,7 @@ package services
 
 import (
 	"fmt"
-	// "io"
+	"os"
 	"net/http"
 	"time"
 
@@ -69,8 +69,8 @@ func (h *UploadHandler) GetPresignedUrl(c *gin.Context) {
 		return
 	}
 	// ubah filename
-	// unixTime := time.Now().Unix()
-	// req.FileName = fmt.Sprintf("%d_%s", unixTime, req.FileName)
+	unixTime := time.Now().Unix()
+	req.FileName = fmt.Sprintf("%d_%s", unixTime, req.FileName)
 
 	// // Implement presigned URL generation logic here
 	presignedURL, err := minio.GetPresignedURLFromMinio(h.log, req.FileName)
@@ -79,8 +79,12 @@ func (h *UploadHandler) GetPresignedUrl(c *gin.Context) {
 		utils.ErrorResp(c, http.StatusInternalServerError, "Failed to generate presigned URL")
 		return
 	}
+	MinioEndpt := os.Getenv("MINIO_ENDPOINT")
+	MinioBucket := os.Getenv("MINIO_BUCKET")
+
+	url :=fmt.Sprintf(`%s/%s/%s`,MinioEndpt, MinioBucket,req.FileName)
 	utils.SuccessResp(c, "Presigned URL generated successfully",
-		map[string]interface{}{"url": presignedURL})
+		map[string]interface{}{"presign-url": presignedURL,"filename":req.FileName,"url":url})
 }
 
 func (h *UploadHandler) GetDownloadFile(c *gin.Context) {
