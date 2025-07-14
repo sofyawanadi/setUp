@@ -132,3 +132,36 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 	utils.SuccessResp(c, "User retrieved successfully", user)
 	return
 }
+
+
+
+func (h *UserHandler) PostUser(c *gin.Context) {
+	var req PostUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		fmt.Println("Error binding JSON:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	// Panggil helper untuk validasi
+	if !utils.ValidateRequest(&req, c, h.log) {
+		return
+	}
+	h.log.Info("[Post][users][PostUser]", zap.Any("request", req))
+	user, err := h.uc.InsertUser(c,req)
+	if err != nil {
+		h.log.Error("Error getting user by ID", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(),"success":false})
+		return
+	}
+	if user == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+	user.Password = "" // Hapus password dari response
+	utils.SuccessResp(c, "User retrieved successfully", map[string]interface{}{
+		"data":user,
+		"message":"success create user",
+		"success":true,
+	})
+	return 
+}

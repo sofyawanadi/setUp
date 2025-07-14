@@ -10,5 +10,6 @@ func RouteUser(rg *gin.RouterGroup, userHandler *UserHandler) {
 	{
 		userGroup.GET("/", userHandler.GetAllUsers)
 		userGroup.GET("/get", userHandler.GetByID)
+		userGroup.POST("/",userHandler.PostUser)
 	}
 }

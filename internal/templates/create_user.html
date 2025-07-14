@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Selamat Datang!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.08);
+        }
+        .header {
+            color: #dc3545;
+            text-align: center;
+        }
+        .content {
+            margin-top: 20px;
+            color: #333;
+            font-size: 16px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background-color: #dc3545;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="header">Selamat Datang, {{.Username}}!</h2>
+        <div class="content">
+            <p>Terima kasih telah melakukan registrasi di platform kami.</p>
+            <p>Akun Anda sudah berhasil dibuat dan siap digunakan.</p>
+            <p>Kami berharap Anda mendapatkan pengalaman terbaik bersama kami.</p>
+            <a href="{{.LoginURL}}" class="btn">Masuk Sekarang</a>
+        </div>
+        <div class="footer">
+            &copy; {{.Year}} NamaPerusahaan. Semua hak dilindungi.
+        </div>
+    </div>
+</body>
+</html>

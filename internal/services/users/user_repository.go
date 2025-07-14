@@ -15,6 +15,8 @@ type UserRepository interface {
     InsertLogLogins(c *gin.Context, email string, success bool) error
     GetCountUsers(c *gin.Context, params utils.QueryParams) (int64, error)
     GetByID(id string) (*User, error)
+    GetByUsername(username string) (*User, error) 
+    InsertUser(c *gin.Context, user PostUserRequest) (*User, error)
 }
 
 type userRepository struct {
@@ -29,6 +31,15 @@ func NewUserRepository(db *gorm.DB, log *zap.Logger) UserRepository {
 func (r *userRepository) GetByEmail(email string) (*User, error) {
 	var u User
 	result := r.db.Where("email = ?", email).First(&u)
+	if result.Error == gorm.ErrRecordNotFound {
+        return nil, nil
+    }
+    return &u, result.Error
+}
+
+func (r *userRepository) GetByUsername(username string) (*User, error) {
+	var u User
+	result := r.db.Where("username = ?", username).First(&u)
 	if result.Error == gorm.ErrRecordNotFound {
         return nil, nil
     }
@@ -76,4 +87,21 @@ func (r *userRepository) GetByID(id string) (*User, error) {
         return nil, nil
     }
     return &u, result.Error
+}
+
+func (r *userRepository) InsertUser(c *gin.Context, user PostUserRequest) (*User, error) {
+    usrId := c.GetString("userID")
+    usr := User{
+        Username: user.Username,
+        Password: user.Password,
+        Email:    user.Email,
+    }
+    usr.CreatedBy = usrId
+    result := r.db.Create(&usr)
+    if result.Error != nil {
+        r.log.Error("failed to get user count", zap.Error(result.Error))
+	} else {
+        r.log.Info("inserted id user", zap.String("user_id", usr.ID.String()))
+	}
+    return &usr, result.Error
 }

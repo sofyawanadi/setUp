@@ -14,3 +14,9 @@ type User struct {
 func (User) TableName() string {
     return "users"
 }
+
+type PostUserRequest struct {
+	Email    string `json:"email" form:"email" validate:"required,email"`
+	Password string `json:"password" form:"password" validate:"required,min=6,max=100"`
+	Username string `json:"username" form:"username" validate:"required"`
+}

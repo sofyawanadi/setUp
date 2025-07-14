@@ -12,10 +12,10 @@ type BaseModel struct {
 	CreatedAt time.Time    `gorm:"column:created_at"`
 	UpdatedAt time.Time    `gorm:"column:updated_at"`
 	DeletedAt sql.NullTime `gorm:"index;column:deleted_at"`
-	CreatedBy string       `gorm:"column:created_by"`
-	UpdatedBy string       `gorm:"column:updated_by"`
-	DeletedBy string       `gorm:"column:deleted_by"`
-	IsActive  bool         `gorm:"column:is_active"`
+	CreatedBy string       `gorm:"column:created_by;null"`
+	UpdatedBy string       `gorm:"column:updated_by;null"`
+	DeletedBy string       `gorm:"column:deleted_by;null"`
+	IsActive  bool         `gorm:"column:is_active;null"`
 	// gorm.Model
 }
 
