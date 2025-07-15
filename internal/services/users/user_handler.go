@@ -98,6 +98,16 @@ func (h *UserHandler) Login(c *gin.Context) {
 	})
 }
 
+// GetUser godoc
+// @Summary Get a user by ID
+// @Description Get user by ID
+// @Tags users
+// @Accept  json
+// @Produce  json
+// @Param id path int true "User ID"
+// @Success 200 {object} User
+// @Failure 404 {object} ErrorResponse
+// @Router /users/{id} [get]
 func (h *UserHandler) GetAllUsers(c *gin.Context) {
 	filters := utils.GetFilter(c)
 	params := utils.QueryParams{

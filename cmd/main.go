@@ -1,4 +1,8 @@
-// main.go
+// @title My API
+// @version 1.0
+// @description This is a sample server.
+// @host localhost:8080
+// @BasePath /api/v1
 package main
 
 import (
@@ -6,7 +10,6 @@ import (
 	"log"
 	"os"
 
-	// "os"
     userServ "setUp/internal/services/users"
     uploadServ "setUp/internal/services/upload"
     minioServ "setUp/internal/minio"
@@ -16,6 +19,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
+    "github.com/swaggo/gin-swagger"
+    "github.com/swaggo/files"
+
+    _ "setUp/cmd/docs"
 )
 
 func main() {
@@ -53,12 +60,15 @@ func main() {
 		AllowCredentials: true,
 		// MaxAge:           12 * time.Hour,
 	}))
+    r.GET("/health", func(c *gin.Context) {
+        c.JSON(200, gin.H{"status": "ok"})
+    })
+    r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
     apiV1 := r.Group("/api/v1") // Grouping routes under /api/v1
     apiV1.Use(gin.Recovery())
     userServ.RouteUser(apiV1, userHandler)
     uploadServ.RouteUpload(apiV1, uploadHandler)
-
     fmt.Println("Server running at port", os.Getenv("PORT"))
     r.Run(":" + os.Getenv("PORT"))
 }
