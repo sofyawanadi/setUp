@@ -1,5 +1,6 @@
 package services
-import ( 
+
+import (
 	"setUp/internal/domain"
 )
 
@@ -20,5 +21,5 @@ type Permissions struct {
 }
 
 func (Permissions) TableName() string {
-    return "permissions"
+	return "permissions"
 }

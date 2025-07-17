@@ -4,25 +4,25 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+
 	"go.uber.org/zap"
 )
 
-
 type ModuleRepository interface {
 	Create(ctx context.Context, ug *Module) error
-	GetByID(ctx context.Context, id int64) (*Module, error) 
+	GetByID(ctx context.Context, id int64) (*Module, error)
 	Delete(ctx context.Context, id int64) error
 	GetAll(ctx context.Context) ([]Module, error)
 	Update(ctx context.Context, ug *Module) error
 }
 
 type moduleRepository struct {
-	DB *sql.DB
+	DB  *sql.DB
 	log *zap.Logger
 }
 
 func NewModuleRepository(db *sql.DB, log *zap.Logger) ModuleRepository {
-	return &moduleRepository{db,log}
+	return &moduleRepository{db, log}
 }
 
 // Create

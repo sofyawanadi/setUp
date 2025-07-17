@@ -4,24 +4,25 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+
 	"go.uber.org/zap"
 )
 
 type RoleRepository interface {
 	Create(ctx context.Context, ug *Role) error
-	GetByID(ctx context.Context, id int64) (*Role, error) 
+	GetByID(ctx context.Context, id int64) (*Role, error)
 	Delete(ctx context.Context, id int64) error
-	GetAll(ctx context.Context) ([]Role, error) 
-	Update(ctx context.Context, ug *Role) error 
+	GetAll(ctx context.Context) ([]Role, error)
+	Update(ctx context.Context, ug *Role) error
 }
 
 type roleRepository struct {
-	DB *sql.DB
+	DB  *sql.DB
 	log *zap.Logger
 }
 
 func NewRoleRepository(db *sql.DB, log *zap.Logger) RoleRepository {
-	return &roleRepository{db,log}
+	return &roleRepository{db, log}
 }
 
 // Create

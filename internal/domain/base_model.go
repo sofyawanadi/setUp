@@ -2,9 +2,10 @@ package domain
 
 import (
 	"database/sql"
+	"time"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"time"
 )
 
 type BaseModel struct {
@@ -22,4 +23,10 @@ type BaseModel struct {
 func (base *BaseModel) BeforeCreate(tx *gorm.DB) (err error) {
 	base.ID = uuid.New()
 	return
+}
+
+type GenericResponse struct {
+	Success bool        `json:"success"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
 }

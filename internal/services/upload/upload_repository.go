@@ -13,10 +13,10 @@ type UploadRepository interface {
 }
 
 type uploadRepository struct {
-	db *gorm.DB
-    log *zap.Logger
+	db  *gorm.DB
+	log *zap.Logger
 }
 
 func NewUploadRepository(db *gorm.DB, log *zap.Logger) UploadRepository {
-	return &uploadRepository{db,log}
+	return &uploadRepository{db, log}
 }

@@ -1,8 +1,9 @@
 package services
 
-import "go.uber.org/zap"
-import "github.com/gin-gonic/gin"
-
+import (
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+)
 
 type SubModulesUsecase interface {
 	GetByID(c *gin.Context, id string) (*SubModules, error)
@@ -14,12 +15,11 @@ type SubModulesUsecase interface {
 
 type subModulesUsecase struct {
 	repo SubModuleRepository
-	log      *zap.Logger
+	log  *zap.Logger
 }
 
-
-func NewSubModulesUsecase(repo SubModuleRepository,log *zap.Logger) SubModulesUsecase {
-	return &subModulesUsecase{repo: repo, log:log,}
+func NewSubModulesUsecase(repo SubModuleRepository, log *zap.Logger) SubModulesUsecase {
+	return &subModulesUsecase{repo: repo, log: log}
 }
 
 func (u *subModulesUsecase) GetByID(c *gin.Context, id string) (*SubModules, error) {

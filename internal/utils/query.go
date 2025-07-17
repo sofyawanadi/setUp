@@ -4,16 +4,17 @@ import (
 	"fmt"
 	"log"
 	"strings"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 type QueryParams struct {
-	Filters    map[string]string // e.g. map["name"] = "john"
-	SortBy     string            // e.g. "created_at"
-	SortOrder  string            // "asc" or "desc"
-	Page       int64               // page number
-	PageSize   int64               // items per page
+	Filters   map[string]string // e.g. map["name"] = "john"
+	SortBy    string            // e.g. "created_at"
+	SortOrder string            // "asc" or "desc"
+	Page      int64             // page number
+	PageSize  int64             // items per page
 }
 
 // ApplyQuery applies filter, sort, and pagination to the given DB query.

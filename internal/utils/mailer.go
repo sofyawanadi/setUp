@@ -1,16 +1,16 @@
 package utils
 
 import (
+	"bytes"
 	"fmt"
+	"html/template"
 	"log"
 	"net/smtp"
 	"os"
-	"html/template"
 	"path/filepath"
-	"bytes"
 )
 
-func SendMail(to []string, subject,  templatePath string,data any) error {
+func SendMail(to []string, subject, templatePath string, data any) error {
 	// Load SMTP configuration from environment variables
 	SMTP_HOST := os.Getenv("SMTP_HOST")
 	SMTP_PORT := os.Getenv("SMTP_PORT")
@@ -19,7 +19,7 @@ func SendMail(to []string, subject,  templatePath string,data any) error {
 	if SMTP_HOST == "" || SMTP_PORT == "" {
 		return fmt.Errorf("SMTP_HOST and SMTP_PORT must be set in environment variables")
 	}
-	path := filepath.Join(GetCurrentDir(),"..","internal","templates",  templatePath)
+	path := filepath.Join(GetCurrentDir(), "..", "internal", "templates", templatePath)
 	// Parsing file template
 	tmpl, err := template.ParseFiles(path)
 	if err != nil {

@@ -61,7 +61,7 @@ func InitMinio(log *zap.Logger) error {
 		fmt.Println("Connection to Minio successful.")
 		fmt.Println("Endpoint: " + MinioEndpt)
 		fmt.Println("Bucket  : " + MinioBucket)
-	}else{
+	} else {
 		err = conn.MakeBucket(ctx, MinioBucket, minio.MakeBucketOptions{Region: location})
 		if err != nil {
 			return fmt.Errorf("minio failed to connect: %w", err)
@@ -120,14 +120,14 @@ func GetPresignedURLFromMinio(log *zap.Logger, objectname string) (string, error
 }
 
 // minio/connector.go
-func DownloadFileFromMinio(log *zap.Logger, objectname string, filePath string)(*minio.Object, error ){
+func DownloadFileFromMinio(log *zap.Logger, objectname string, filePath string) (*minio.Object, error) {
 	// Uncomment this in case the code goes into panic at any point of time
 	// defer HandlePanic()
 	// Download and save the object as a file in the local filesystem.
 	MinioBucket := os.Getenv("MINIO_BUCKET")
 	if MinioBucket == "" {
 		fmt.Println("MINIO_BUCKET environment variable is not set.")
-		return nil,fmt.Errorf("MINIO_BUCKET environment variable is not set")
+		return nil, fmt.Errorf("MINIO_BUCKET environment variable is not set")
 	}
 
 	// err := s3Client.FGetObject(ctx, MinioBucket, objectname, filePath, minio.GetObjectOptions{})
@@ -135,13 +135,13 @@ func DownloadFileFromMinio(log *zap.Logger, objectname string, filePath string)(
 	// 	log.Error("Error downloading file from MinIO", zap.Error(err))
 	// 	return err
 	// }
-	obj,	err := s3Client.GetObject(context.Background(), MinioBucket, objectname,  minio.GetObjectOptions{})
+	obj, err := s3Client.GetObject(context.Background(), MinioBucket, objectname, minio.GetObjectOptions{})
 	if err != nil {
 		log.Error("Error downloading file from MinIO", zap.Error(err))
-		return nil,err
+		return nil, err
 	}
 
-	return obj,nil
+	return obj, nil
 }
 
 func UploadFileInMinio(log *zap.Logger, objectname string, filePath string, contentType string) error {

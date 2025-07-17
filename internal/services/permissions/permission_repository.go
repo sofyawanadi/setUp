@@ -1,25 +1,28 @@
 package services
+
 import (
 	"context"
 	"database/sql"
 	"errors"
+
 	"go.uber.org/zap"
 )
+
 type PermissionsRepository interface {
 	Create(ctx context.Context, ug *Permissions) error
-	GetByID(ctx context.Context, id int64) (*Permissions, error) 
+	GetByID(ctx context.Context, id int64) (*Permissions, error)
 	Delete(ctx context.Context, id int64) error
-	GetAll(ctx context.Context) ([]Permissions, error) 
-	Update(ctx context.Context, ug *Permissions) error 
+	GetAll(ctx context.Context) ([]Permissions, error)
+	Update(ctx context.Context, ug *Permissions) error
 }
 
 type permissionsRepository struct {
-	DB *sql.DB
+	DB  *sql.DB
 	log *zap.Logger
 }
 
 func NewPermissionsRepository(db *sql.DB, log *zap.Logger) PermissionsRepository {
-	return &permissionsRepository{db,log}
+	return &permissionsRepository{db, log}
 }
 
 // Create

@@ -115,7 +115,7 @@ func (r *userUsecase) InsertUser(c *gin.Context, userPost PostUserRequest) (*Use
 		return nil, err
 	}
 	appUrl := os.Getenv("APP_URL")
-	year :=time.Now().Year()
+	year := time.Now().Year()
 	utils.SendMail([]string{usr.Email}, "Notification New User", "create_user.html", map[string]interface{}{
 		"Username": usr.Username,
 		"Year":     year,

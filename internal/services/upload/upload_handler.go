@@ -2,8 +2,8 @@ package services
 
 import (
 	"fmt"
-	"os"
 	"net/http"
+	"os"
 	"time"
 
 	"setUp/internal/utils"
@@ -82,9 +82,9 @@ func (h *UploadHandler) GetPresignedUrl(c *gin.Context) {
 	MinioEndpt := os.Getenv("MINIO_ENDPOINT")
 	MinioBucket := os.Getenv("MINIO_BUCKET")
 
-	url :=fmt.Sprintf(`%s/%s/%s`,MinioEndpt, MinioBucket,req.FileName)
+	url := fmt.Sprintf(`%s/%s/%s`, MinioEndpt, MinioBucket, req.FileName)
 	utils.SuccessResp(c, "Presigned URL generated successfully",
-		map[string]interface{}{"presign-url": presignedURL,"filename":req.FileName,"url":url})
+		map[string]interface{}{"presign-url": presignedURL, "filename": req.FileName, "url": url})
 }
 
 func (h *UploadHandler) GetDownloadFile(c *gin.Context) {
@@ -111,8 +111,8 @@ func (h *UploadHandler) GetDownloadFile(c *gin.Context) {
 	c.Header("Content-Disposition", "attachment; filename="+filename)
 	c.Header("Content-Type", stat.ContentType)
 
-	c.DataFromReader(http.StatusOK, stat.Size,stat.ContentType, obj, nil)
-	
+	c.DataFromReader(http.StatusOK, stat.Size, stat.ContentType, obj, nil)
+
 	// Stream file ke client
 	//
 	//	c.Stream(func(w io.Writer) bool {

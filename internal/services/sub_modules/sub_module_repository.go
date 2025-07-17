@@ -1,26 +1,28 @@
 package services
+
 import (
 	"context"
 	"database/sql"
 	"errors"
+
 	"go.uber.org/zap"
 )
 
 type SubModuleRepository interface {
 	Create(ctx context.Context, ug *SubModules) error
-	GetByID(ctx context.Context, id string) (*SubModules, error) 
+	GetByID(ctx context.Context, id string) (*SubModules, error)
 	Delete(ctx context.Context, id string) error
-	GetAll(ctx context.Context) ([]SubModules, error) 
-	Update(ctx context.Context, ug *SubModules) error 
+	GetAll(ctx context.Context) ([]SubModules, error)
+	Update(ctx context.Context, ug *SubModules) error
 }
 
 type subModuleRepository struct {
-	DB *sql.DB
+	DB  *sql.DB
 	log *zap.Logger
 }
 
 func NewSubModuleRepository(db *sql.DB, log *zap.Logger) SubModuleRepository {
-	return &subModuleRepository{db,log}
+	return &subModuleRepository{db, log}
 }
 
 // Create

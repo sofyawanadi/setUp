@@ -1,8 +1,9 @@
 package services
 
 import (
-	"github.com/gin-gonic/gin"
 	"setUp/internal/middleware"
+
+	"github.com/gin-gonic/gin"
 )
 
 func RouteNote(rg *gin.RouterGroup, noteHandler *NoteHandler) {

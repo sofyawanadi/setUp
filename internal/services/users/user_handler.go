@@ -98,16 +98,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 	})
 }
 
-// GetUser godoc
-// @Summary Get a user by ID
-// @Description Get user by ID
-// @Tags users
-// @Accept  json
-// @Produce  json
-// @Param id path int true "User ID"
-// @Success 200 {object} User
-// @Failure 404 {object} ErrorResponse
-// @Router /users/{id} [get]
+
 func (h *UserHandler) GetAllUsers(c *gin.Context) {
 	filters := utils.GetFilter(c)
 	params := utils.QueryParams{
@@ -143,8 +134,6 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 	return
 }
 
-
-
 func (h *UserHandler) PostUser(c *gin.Context) {
 	var req PostUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -157,10 +146,10 @@ func (h *UserHandler) PostUser(c *gin.Context) {
 		return
 	}
 	h.log.Info("[Post][users][PostUser]", zap.Any("request", req))
-	user, err := h.uc.InsertUser(c,req)
+	user, err := h.uc.InsertUser(c, req)
 	if err != nil {
 		h.log.Error("Error getting user by ID", zap.Error(err))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(),"success":false})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "success": false})
 		return
 	}
 	if user == nil {
@@ -169,9 +158,9 @@ func (h *UserHandler) PostUser(c *gin.Context) {
 	}
 	user.Password = "" // Hapus password dari response
 	utils.SuccessResp(c, "User retrieved successfully", map[string]interface{}{
-		"data":user,
-		"message":"success create user",
-		"success":true,
+		"data":    user,
+		"message": "success create user",
+		"success": true,
 	})
-	return 
+	return
 }

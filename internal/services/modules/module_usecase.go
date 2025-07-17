@@ -1,24 +1,25 @@
 package services
 
-import "go.uber.org/zap"
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+)
 
 type ModuleUsecase interface {
-	GetByID(c *gin.Context,id int) (*Module, error)
-	Create(c *gin.Context,module *Module) error
-	Update(c *gin.Context,module *Module) error
-	Delete(c *gin.Context,id int) error
-	GetAll(c *gin.Context,) ([]Module, error)
+	GetByID(c *gin.Context, id int) (*Module, error)
+	Create(c *gin.Context, module *Module) error
+	Update(c *gin.Context, module *Module) error
+	Delete(c *gin.Context, id int) error
+	GetAll(c *gin.Context) ([]Module, error)
 }
 
 type moduleUsecase struct {
 	repo ModuleRepository
-	log      *zap.Logger
+	log  *zap.Logger
 }
 
-
-func NewModuleUsecase(repo ModuleRepository,log *zap.Logger) ModuleUsecase {
-	return &moduleUsecase{repo: repo, log:log,}
+func NewModuleUsecase(repo ModuleRepository, log *zap.Logger) ModuleUsecase {
+	return &moduleUsecase{repo: repo, log: log}
 }
 
 func (u *moduleUsecase) GetByID(c *gin.Context, id int) (*Module, error) {

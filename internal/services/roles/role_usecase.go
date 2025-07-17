@@ -1,25 +1,25 @@
 package services
 
-import "go.uber.org/zap"
-import "github.com/gin-gonic/gin"
-
+import (
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+)
 
 type RoleUsecase interface {
-	GetByID(c *gin.Context,id int) (*Role, error)
-	Create(c *gin.Context,role *Role) error
-	Update(c *gin.Context,role *Role) error
-	Delete(c *gin.Context,id int) error
-	GetAll(c *gin.Context,) ([]Role, error)
+	GetByID(c *gin.Context, id int) (*Role, error)
+	Create(c *gin.Context, role *Role) error
+	Update(c *gin.Context, role *Role) error
+	Delete(c *gin.Context, id int) error
+	GetAll(c *gin.Context) ([]Role, error)
 }
 
 type roleUsecase struct {
 	repo RoleRepository
-	log      *zap.Logger
+	log  *zap.Logger
 }
 
-
-func NewRoleUsecase(repo RoleRepository,log *zap.Logger) RoleUsecase {
-	return &roleUsecase{repo: repo, log:log,}
+func NewRoleUsecase(repo RoleRepository, log *zap.Logger) RoleUsecase {
+	return &roleUsecase{repo: repo, log: log}
 }
 
 func (u *roleUsecase) GetByID(c *gin.Context, id int) (*Role, error) {

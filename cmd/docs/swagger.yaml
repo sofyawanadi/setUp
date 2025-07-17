@@ -1,4 +1,74 @@
+basePath: /api/v1
+definitions:
+  internal_services_notes.NoteRequest:
+    properties:
+      content:
+        type: string
+      title:
+        type: string
+    required:
+    - content
+    - title
+    type: object
+  setUp_internal_domain.GenericResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+host: localhost:8080
 info:
   contact: {}
-paths: {}
+  description: This is a sample server.
+  title: My API
+  version: "1.0"
+paths:
+  /notes:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all Notes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/setUp_internal_domain.GenericResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/setUp_internal_domain.GenericResponse'
+      summary: Get list of Notes
+      tags:
+      - Notes
+    post:
+      consumes:
+      - application/json
+      description: Add a new notes to the system
+      parameters:
+      - description: notes data
+        in: body
+        name: notes
+        required: true
+        schema:
+          $ref: '#/definitions/internal_services_notes.NoteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/setUp_internal_domain.GenericResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/setUp_internal_domain.GenericResponse'
+      summary: Create a new notes
+      tags:
+      - notes
 swagger: "2.0"

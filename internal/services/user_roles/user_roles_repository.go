@@ -1,8 +1,10 @@
 package services
+
 import (
 	"context"
 	"database/sql"
 	"errors"
+
 	"go.uber.org/zap"
 )
 
@@ -13,19 +15,19 @@ type UserRoles struct {
 
 type UserRolesRepository interface {
 	Create(ctx context.Context, ug *UserRoles) error
-	GetByID(ctx context.Context, id int64) (*UserRoles, error) 
+	GetByID(ctx context.Context, id int64) (*UserRoles, error)
 	Delete(ctx context.Context, id int64) error
-	GetAll(ctx context.Context) ([]UserRoles, error) 
-	Update(ctx context.Context, ug *UserRoles) error 
+	GetAll(ctx context.Context) ([]UserRoles, error)
+	Update(ctx context.Context, ug *UserRoles) error
 }
 
 type userRolesRepository struct {
-	DB *sql.DB
+	DB  *sql.DB
 	log *zap.Logger
 }
 
 func NewUserRolesRepository(db *sql.DB, log *zap.Logger) UserRolesRepository {
-	return &userRolesRepository{db,log}
+	return &userRolesRepository{db, log}
 }
 
 // Create

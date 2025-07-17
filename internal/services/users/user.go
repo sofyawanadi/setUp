@@ -1,5 +1,6 @@
 package services
-import ( 
+
+import (
 	"setUp/internal/domain"
 )
 
@@ -11,8 +12,9 @@ type User struct {
 	Address  string `gorm:"column:address;null"`
 	Token    string `gorm:"-"`
 }
+
 func (User) TableName() string {
-    return "users"
+	return "users"
 }
 
 type PostUserRequest struct {

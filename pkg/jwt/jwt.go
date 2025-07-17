@@ -43,7 +43,7 @@ func VerifyToken(tokenString string) error {
 }
 
 func CreateRefreshToken(id, email string) (string, error) {
-	
+
 	expStr := os.Getenv("JWT_REFRESH_EXP") // misal: "1"
 	expInt, err := strconv.Atoi(expStr)
 	if err != nil {

@@ -1,6 +1,6 @@
 package services
 
-import ( 
+import (
 	"setUp/internal/domain"
 )
 
@@ -11,5 +11,5 @@ type UserRole struct {
 }
 
 func (UserRole) TableName() string {
-    return "user_roles"
+	return "user_roles"
 }
