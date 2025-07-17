@@ -30,7 +30,7 @@ func NewUserRepository(db *gorm.DB, log *zap.Logger) UserRepository {
 
 func (r *userRepository) GetByEmail(email string) (*User, error) {
 	var u User
-	result := r.db.Where("email = ?", email).Where("deleted_by =?", nil).First(&u)
+	result := r.db.Where("email = ? AND deleted_by IS NULL", email).First(&u)
 	if result.Error == gorm.ErrRecordNotFound {
 		return nil, nil
 	}

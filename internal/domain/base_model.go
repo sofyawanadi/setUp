@@ -15,7 +15,7 @@ type BaseModel struct {
 	CreatedBy string       `gorm:"column:created_by;null"`
 	UpdatedBy string       `gorm:"column:updated_by;null"`
 	DeletedBy string       `gorm:"column:deleted_by;null"`
-	IsActive  bool         `gorm:"column:is_active;null"`
+	IsActive  bool         `gorm:"column:is_active;default:true"`
 	// gorm.Model
 }
 

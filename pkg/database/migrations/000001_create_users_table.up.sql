@@ -11,5 +11,5 @@ CREATE TABLE users(
         created_by VARCHAR(255),
         updated_by VARCHAR(255),
         deleted_by VARCHAR(255),
-        IsActive BOOLEAN DEFAULT true
+        is_active BOOLEAN DEFAULT true
     );

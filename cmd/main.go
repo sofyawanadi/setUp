@@ -11,6 +11,7 @@ import (
 	"os"
 
     userServ "setUp/internal/services/users"
+    noteServ "setUp/internal/services/notes"
     uploadServ "setUp/internal/services/upload"
     minioServ "setUp/internal/minio"
 	"setUp/internal/logger"
@@ -47,6 +48,9 @@ func main() {
     userUC := userServ.NewUserUsecase(userRepo,logZap)
     userHandler := userServ.NewUserHandler(userUC,logZap)
     uploadHandler := uploadServ.NewUploadHandler(logZap)
+    noteRepo := noteServ.NewNoteRepository(db, logZap)
+    noteUC := noteServ.NewNoteUsecase(noteRepo, logZap)
+    noteHandler := noteServ.NewNoteHandler(noteUC, logZap)
 
     // Initialize Gin router
     r := gin.Default()
@@ -69,6 +73,7 @@ func main() {
     apiV1.Use(gin.Recovery())
     userServ.RouteUser(apiV1, userHandler)
     uploadServ.RouteUpload(apiV1, uploadHandler)
+    noteServ.RouteNote(apiV1, noteHandler)
     fmt.Println("Server running at port", os.Getenv("PORT"))
     r.Run(":" + os.Getenv("PORT"))
 }
