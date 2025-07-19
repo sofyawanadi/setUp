@@ -30,7 +30,7 @@ func NewNoteUsecase(repo NoteRepository, log *zap.Logger) NoteUsecase {
 func (u *noteUsecase) GetByID(c *gin.Context, id string) (*Note, error) {
 	repoNote, err := u.repo.GetByID(c, id)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("note not found")
 	}
 	if repoNote == nil {
 		return nil, fmt.Errorf("note not found")

@@ -11,7 +11,10 @@ import (
 )
 
 var validate = validator.New()
-
+type ValidationErrorResponse struct {
+	Error   string      `json:"error"`
+	Details interface{} `json:"details"`
+}
 func ValidateRequest(req interface{}, c *gin.Context, log *zap.Logger) bool {
 	err := validate.Struct(req)
 	if err == nil {
@@ -31,10 +34,11 @@ func ValidateRequest(req interface{}, c *gin.Context, log *zap.Logger) bool {
 	log.Warn("Validasi gagal", zap.String("errors", string(jsonErr)))
 
 	// Kirim response ke client
-	c.JSON(http.StatusBadRequest, gin.H{
-		"error":   "validasi gagal",
-		"details": errors,
-	})
+	resp := ValidationErrorResponse{
+		Error:   "validasi gagal",
+		Details: errors, // bisa berupa map[string]string atau []string tergantung isinya
+	}
+	c.JSON(http.StatusBadRequest, resp)
 
 	return false
 }

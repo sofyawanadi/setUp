@@ -40,7 +40,7 @@ func (r *noteRepository) Create(ctx *gin.Context, note *NoteRequest) (*Note, err
 		},
 	}
 	if err := r.db.WithContext(ctx).Create(&create).Error; err != nil {
-		r.log.Error("failed to log login attempt", zap.Error(err))
+		r.log.Error("failed to insert note", zap.Error(err))
 		return nil, err
 	}
 	return &create, nil
@@ -50,8 +50,10 @@ func (r *noteRepository) GetByID(ctx *gin.Context, id string) (*Note, error) {
 	var note Note
 	if err := r.db.WithContext(ctx).First(&note, "id = ? and is_active = ?", id, true).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return nil, nil
+			r.log.Error("failed to retrieve note", zap.Error(err))
+			return nil, err
 		}
+		r.log.Error("failed to retrieve note", zap.Error(err))
 		return nil, err
 	}
 	return &note, nil
@@ -63,6 +65,7 @@ func (r *noteRepository) GetAll(ctx context.Context, params utils.QueryParams) (
 	query.WithContext(ctx).Where("is_active = ?", true)
 
 	if err := query.Find(&notes).Error; err != nil {
+		r.log.Error("failed to get all note", zap.Error(err))
 		return nil, err
 	}
 	return notes, nil
@@ -74,6 +77,7 @@ func (r *noteRepository) GetCount(ctx context.Context, params utils.QueryParams)
 	query.WithContext(ctx).Where("is_active = ?", true)
 
 	if err := query.Count(&notes).Error; err != nil {
+		r.log.Error("failed to count note", zap.Error(err))
 		return 0, err
 	}
 	return notes, nil
@@ -91,7 +95,7 @@ func (r *noteRepository) Update(ctx *gin.Context, note *NoteUpdateRequest) (*Not
 	}
 	update.ID = note.Id
 	if err := r.db.WithContext(ctx).Save(&update).Error; err != nil {
-		r.log.Error("failed to log login attempt", zap.Error(err))
+		r.log.Error("failed to Update note", zap.Error(err))
 		return nil, err
 	}
 	return &update, nil

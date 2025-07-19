@@ -2,8 +2,8 @@ Auth
 Upload
 
 next->
-Swagger
+Swagger (100%)
 Testing
  CI/CD
  Containerization
- notes app
+ notes api (done)

@@ -1,8 +1,11 @@
 // @title			My API
 // @version		1.0
 // @description	This is a sample server.
-// @host			localhost:8080
+// @host			localhost:3000
 // @BasePath		/api/v1
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 package main
 
 import (
