@@ -101,3 +101,4 @@
 {"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-19T18:09:34.248+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
 {"level":"\u001b[33mWARN\u001b[0m","timestamp":"2025-07-19T18:13:45.448+0700","caller":"utils/validator.go:34","message":"Validasi gagal","errors":"{\n  \"Title\": \"Field 'Title' tidak valid (rule: required)\"\n}"}
 {"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-19T20:16:05.651+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
+{"level":"\u001b[34mINFO\u001b[0m","timestamp":"2025-07-20T22:44:26.538+0700","caller":"users/user_handler.go:78","message":"Login Success","Email":"nayfos@example.com","client_ip":"127.0.0.1"}
