@@ -1,9 +1,13 @@
 Auth
 Upload
+Swagger
+notes api
 
 next->
-Swagger (100%)
-Testing
- CI/CD
- Containerization
- notes api (done)
+RBAC(10%)
+refresh token api
+Testing (WIP)
+CI/CD
+Containerization dockerfile (WIP)
+Containerization docker compose
+

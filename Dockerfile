@@ -1,5 +1,5 @@
 # Gunakan image Golang sebagai base build
-FROM golang:1.22 AS builder
+FROM golang:1.23.6 AS builder
 
 # Set direktori kerja di dalam container
 WORKDIR /app
@@ -11,19 +11,19 @@ COPY . .
 RUN go mod download
 
 # Build binary aplikasi
-RUN CGO_ENABLED=0 GOOS=linux go build -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd
 
 # Gunakan image kecil untuk menjalankan binary (lebih ringan)
 FROM alpine:latest
 
-# Set timezone (opsional)
+# Install sertifikat root agar koneksi TLS tidak error (opsional)
 RUN apk --no-cache add ca-certificates
 
 # Direktori kerja di container final
 WORKDIR /root/
 
-# Copy binary dari builder
+# Copy binary dari stage builder
 COPY --from=builder /app/main .
 
-# Jalankan aplikasi
+# Jalankan binary
 CMD ["./main"]
