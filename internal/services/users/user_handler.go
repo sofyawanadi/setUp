@@ -3,11 +3,14 @@ package services
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"strings"
 
 	"setUp/internal/utils"
-	"setUp/pkg/jwt"
+	jwtPkg "setUp/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
 	// "path/filepath"
 )
@@ -63,13 +66,13 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := jwt.CreateToken(user.ID.String(), user.Email)
+	token, err := jwtPkg.CreateToken(user.ID.String(), user.Email)
 	if err != nil {
 		h.log.Error("Error creating token", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
-	refreshToken, err := jwt.CreateRefreshToken(user.ID.String(), user.Email)
+	refreshToken, err := jwtPkg.CreateRefreshToken(user.ID.String(), user.Email)
 	if err != nil {
 		h.log.Error("Error creating token", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
@@ -97,7 +100,6 @@ func (h *UserHandler) Login(c *gin.Context) {
 		"client_ip": clientIP,
 	})
 }
-
 
 func (h *UserHandler) GetAllUsers(c *gin.Context) {
 	filters := utils.GetFilter(c)
@@ -161,6 +163,74 @@ func (h *UserHandler) PostUser(c *gin.Context) {
 		"data":    user,
 		"message": "success create user",
 		"success": true,
+	})
+	return
+}
+
+func (h *UserHandler) RefreshToken(c *gin.Context) {
+	// cek apakah ada token
+	var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing or invalid Authorization"})
+		c.Abort()
+		return
+	}
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	// Parse and validate token
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// pastikan algoritma cocok
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return jwtSecret, nil
+	})
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing or invalid Authorization"})
+		c.Abort()
+		return
+	}
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		// log.Print("Authenticated user ID:", claims)
+		c.Set("userID", claims["id"])
+		c.Set("exp", claims["exp"])
+		c.Set("iat", claims["iat"])
+		c.Set("email", claims["email"])
+	}
+	// Cek apakah user sudah ada
+	clientIP := c.ClientIP()
+	user, err := h.uc.GetByID(c)
+	if err != nil {
+		h.log.Error("Error getting user by email", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+	// Jika user tidak ditemukan
+	if user == nil {
+		h.log.Warn("Login failed: user not found", zap.String("Email", user.Email), zap.String("client_ip", clientIP))
+		h.uc.InsertLogLogin(c, user.Email, false)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found"})
+		return
+	}
+	userId := c.GetString("userID")
+	tokenString, err = jwtPkg.CreateToken(userId, user.Email)
+	if err != nil {
+		h.log.Error("Error creating token", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+	refreshToken, err := jwtPkg.CreateRefreshToken(userId, user.Email)
+	if err != nil {
+		h.log.Error("Error creating token", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+	h.log.Info("Login Success", zap.String("Email", user.Email), zap.String("client_ip", clientIP))
+
+	utils.SuccessResp(c, "Success Refresh Token", map[string]interface{}{
+		"token":         tokenString,
+		"refresh_token": refreshToken,
 	})
 	return
 }
