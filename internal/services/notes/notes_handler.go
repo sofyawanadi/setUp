@@ -1,29 +1,34 @@
 package services
 
 import (
-	"net/http"
-	"setUp/internal/utils"
-	"setUp/internal/domain"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"net/http"
+	"setUp/internal/domain"
+	"setUp/internal/utils"
 )
 
 type NoteHandler struct {
 	uc  NoteUsecase
 	log *zap.Logger
 }
+
 func NewNoteHandler(uc NoteUsecase, log *zap.Logger) *NoteHandler {
 	return &NoteHandler{uc: uc, log: log}
 }
+
 var _ = domain.GenericResponse{}
 
 // GetNotes godoc
 // @Security BearerAuth
+//
 //	@Summary		Get a Notes
 //	@Description	Retrieve a Notes
 //	@Tags			Notes
+//
 // @Param id path string true "ID catatan yang ingin dicari"
+//
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{object} utils.SuccessResponse
@@ -33,7 +38,7 @@ func (h *NoteHandler) GetNote(c *gin.Context) {
 	id := c.Param("id")
 	note, err := h.uc.GetByID(c, id)
 	if err != nil {
-		utils.ErrorResp(c, http.StatusInternalServerError, err.Error())
+		utils.ErrorResp(c, http.StatusNotFound, err.Error())
 		return
 	}
 	utils.SuccessResp(c, "note fetched successfully", note)
@@ -41,6 +46,7 @@ func (h *NoteHandler) GetNote(c *gin.Context) {
 
 // GetNotes godoc
 // @Security BearerAuth
+//
 //	@Summary		Get list of Notes
 //	@Description	Retrieve a list of all Notes
 //	@Tags			Notes
@@ -71,18 +77,18 @@ type NoteRequest struct {
 	Content string `json:"content" form:"content" validate:"required"`
 }
 
-// 	CreateNote godoc
-// 	@Security BearerAuth
-//	@Summary		Create a new notes
-//	@Description	Add a new notes to the system
-//	@Tags			Notes
-//	@Accept			json
-//	@Produce		json
-//	@Param			notes	body	NoteRequest	true	"notes data"
-//	@Success		200		{object} utils.SuccessResponse
-//	@Failure		500		{object} utils.BaseResponse
-//	@Failure		400		{object} utils.ValidationErrorResponse
-//	@Router			/notes [post]
+// CreateNote godoc
+// @Security BearerAuth
+// @Summary		Create a new notes
+// @Description	Add a new notes to the system
+// @Tags			Notes
+// @Accept			json
+// @Produce		json
+// @Param			notes	body	NoteRequest	true	"notes data"
+// @Success		200		{object} utils.SuccessResponse
+// @Failure		500		{object} utils.BaseResponse
+// @Failure		400		{object} utils.ValidationErrorResponse
+// @Router			/notes [post]
 func (h *NoteHandler) CreateNote(c *gin.Context) {
 	var req NoteRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -110,18 +116,18 @@ type NoteUpdateRequest struct {
 	Content string    `json:"content" form:"content" validate:"required"`
 }
 
-// 	UpdateNote godoc
-// 	@Security BearerAuth
-//	@Summary		update a new notes
-//	@Description	Add a new notes to the system
-//	@Tags			Notes
-//	@Accept			json
-//	@Produce		json
-//	@Param			notes	body	NoteUpdateRequest	true	"notes data"
-//	@Success		200		{object} utils.SuccessResponse
-//	@Failure		500		{object} utils.BaseResponse
-//	@Failure		400		{object} utils.ValidationErrorResponse
-//	@Router			/notes [put]
+// UpdateNote godoc
+// @Security BearerAuth
+// @Summary		update a new notes
+// @Description	Add a new notes to the system
+// @Tags			Notes
+// @Accept			json
+// @Produce		json
+// @Param			notes	body	NoteUpdateRequest	true	"notes data"
+// @Success		200		{object} utils.SuccessResponse
+// @Failure		500		{object} utils.BaseResponse
+// @Failure		400		{object} utils.ValidationErrorResponse
+// @Router			/notes [put]
 func (h *NoteHandler) UpdateNote(c *gin.Context) {
 	var req NoteUpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -135,20 +141,20 @@ func (h *NoteHandler) UpdateNote(c *gin.Context) {
 
 	note, err := h.uc.Update(c, &req)
 	if err != nil {
-		utils.ErrorResp(c, http.StatusInternalServerError, err.Error())
+		utils.ErrorResp(c, http.StatusInternalServerError, "failed to update note")
 		return
 	}
-	utils.SuccessResp(c, "req updated successfully", map[string]interface{}{
-		"data": note,
-	})
+	utils.SuccessResp(c, "req updated successfully", note)
 }
 
-// 	DeleteNote godoc
-// 	@Security BearerAuth
+//	DeleteNote godoc
+//	@Security BearerAuth
 //	@Summary		delete a new notes
 //	@Description	delete a new notes to the system
 //	@Tags			Notes
+//
 // @Param id path string true "ID catatan yang akan dihapus"
+//
 //	@Accept			json
 //	@Produce		json
 //	@Success		200		{object} utils.SuccessResponse
