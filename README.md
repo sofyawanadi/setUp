@@ -3,10 +3,10 @@ Upload
 Swagger
 notes api
 middleware
+refresh token api 
 
 next->
 RBAC(10%)
-refresh token api (50%)
 Testing (70%)
 CI/CD
 Containerization dockerfile (WIP)

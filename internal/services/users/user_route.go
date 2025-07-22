@@ -8,6 +8,7 @@ import (
 
 func RouteUser(rg *gin.RouterGroup, userHandler *UserHandler) {
 	rg.POST("/login", userHandler.Login)
+	rg.GET("/refresh-token", userHandler.RefreshToken)
 	userGroup := rg.Group("/users").Use(middleware.AuthMiddleware())
 	{
 		userGroup.GET("/", userHandler.GetAllUsers)
